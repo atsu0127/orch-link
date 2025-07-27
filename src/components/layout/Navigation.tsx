@@ -30,13 +30,13 @@ export function Navigation({ activeTab, onTabChange, children }: NavigationProps
           className="bg-white rounded-lg shadow-sm"
         >
           <Tabs.List className="border-b">
-            {/* 出欠フォームタブ */}
+            {/* 出欠調整タブ */}
             <Tabs.Tab
               value="attendance"
               leftSection={<IconClipboardList size="1rem" />}
               className="flex-1 sm:flex-none"
             >
-              <span className="hidden sm:inline">出欠フォーム</span>
+              <span className="hidden sm:inline">出欠調整</span>
               <span className="sm:hidden">出欠</span>
             </Tabs.Tab>
 

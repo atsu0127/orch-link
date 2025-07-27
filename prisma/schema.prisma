@@ -43,7 +43,7 @@ model Concert {
   @@map("concerts")
 }
 
-// 出欠フォームモデル
+// 出欠調整モデル
 model AttendanceForm {
   id          String  @id @default(cuid())
   concertId   String

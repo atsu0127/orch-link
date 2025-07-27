@@ -86,7 +86,7 @@ export async function getScoresByConcertFromDB(concertId: string) {
 }
 
 /**
- * 特定演奏会の出欠フォーム取得
+ * 特定演奏会の出欠調整取得
  * モックデータのフィルタリングロジックをPrismaで実装
  */
 export async function getAttendanceFormsByConcertFromDB(concertId: string) {

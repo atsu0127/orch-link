@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 
 /**
  * GET /api/attendance
- * 出欠フォーム取得API
+ * 出欠調整取得API
  */
 export async function GET(request: NextRequest) {
   try {
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 指定された演奏会の出欠フォームを取得
+    // 指定された演奏会の出欠調整を取得
     const attendanceForms = await getAttendanceFormsByConcertFromDB(concertId);
 
     return NextResponse.json({
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/attendance
- * 出欠フォーム作成API（管理者のみ）
+ * 出欠調整作成API（管理者のみ）
  */
 export async function POST(request: NextRequest) {
   try {
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // データベースに出欠フォームを作成
+    // データベースに出欠調整を作成
     const newAttendanceForm = await prisma.attendanceForm.create({
       data: {
         concertId,
@@ -98,14 +98,14 @@ export async function POST(request: NextRequest) {
       },
     });
     
-    console.log("出欠フォーム作成完了:", {
+    console.log("出欠調整作成完了:", {
       attendanceFormId: newAttendanceForm.id,
       createdBy: payload.userId,
     });
 
     return NextResponse.json({
       success: true,
-      message: "出欠フォームを作成しました",
+      message: "出欠調整を作成しました",
     });
 
   } catch (error) {

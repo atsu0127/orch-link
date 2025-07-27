@@ -18,7 +18,7 @@ export interface Concert {
   updatedAt: Date; // 最終更新日時
 }
 
-// 出欠フォーム型定義
+// 出欠調整型定義
 export interface AttendanceForm {
   id: string;
   concertId: string;
