@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { mockAttendanceForms } from "@/lib/mock-data";
+import { getAttendanceFormsByConcertFromDB } from "@/lib/seed-helpers";
+import { prisma } from "@/lib/db";
 
 /**
  * GET /api/attendance
@@ -37,9 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 指定された演奏会の出欠フォームを取得
-    const attendanceForms = mockAttendanceForms.filter(
-      form => form.concertId === concertId
-    );
+    const attendanceForms = await getAttendanceFormsByConcertFromDB(concertId);
 
     return NextResponse.json({
       success: true,
@@ -89,13 +88,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 本来はここでデータベースに保存
-    // Phase 1ではモックデータとして扱う
-    console.log("出欠フォーム作成（モック）:", {
-      concertId,
-      title,
-      url,
-      description,
+    // データベースに出欠フォームを作成
+    const newAttendanceForm = await prisma.attendanceForm.create({
+      data: {
+        concertId,
+        title,
+        url,
+        description,
+      },
+    });
+    
+    console.log("出欠フォーム作成完了:", {
+      attendanceFormId: newAttendanceForm.id,
       createdBy: payload.userId,
     });
 

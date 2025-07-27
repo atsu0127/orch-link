@@ -1,8 +1,10 @@
 ## FEATURE:
 
-- Let's prepare this directory for developing a Next.js application from scratch.
-- The goal is to get ready to start development for Phase 1 of the project.
+- Currently, mock data is being displayed. We want to use SQLite even when running locally.
+- Code compatible with Prisma has already been generated:
+  - ./prisma
+  - ./src/generated
 
 ## DOCUMENTATION:
 
-- @docs : Vision and concept of this application.
+- The structure is documented under ./docs

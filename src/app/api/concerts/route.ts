@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { mockConcerts, getActiveConcerts, getConcertData } from "@/lib/mock-data";
+import { 
+  getAllConcertsFromDB, 
+  getActiveConcertsFromDB, 
+  getConcertDataFromDB 
+} from "@/lib/seed-helpers";
 
 /**
  * GET /api/concerts
@@ -32,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     // 特定の演奏会詳細を取得
     if (concertId) {
-      const concertData = getConcertData(concertId);
+      const concertData = await getConcertDataFromDB(concertId);
       if (!concertData) {
         return NextResponse.json(
           { error: "演奏会が見つかりません" },
@@ -47,7 +51,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 演奏会一覧を取得
-    const concerts = activeOnly ? getActiveConcerts() : mockConcerts;
+    const concerts = activeOnly ? await getActiveConcertsFromDB() : await getAllConcertsFromDB();
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { mockPractices } from "@/lib/mock-data";
+import { getPracticesByConcertFromDB } from "@/lib/seed-helpers";
+import { prisma } from "@/lib/db";
 
 /**
  * GET /api/practices
@@ -32,7 +33,9 @@ export async function GET(request: NextRequest) {
 
     // 特定の練習予定を取得
     if (practiceId) {
-      const practice = mockPractices.find(p => p.id === practiceId);
+      const practice = await prisma.practice.findUnique({
+        where: { id: practiceId }
+      });
       if (!practice) {
         return NextResponse.json(
           { error: "練習予定が見つかりません" },
@@ -55,9 +58,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 指定された演奏会の練習予定を時系列順で取得
-    const practices = mockPractices
-      .filter(practice => practice.concertId === concertId)
-      .sort((a, b) => a.date.getTime() - b.date.getTime());
+    const practices = await getPracticesByConcertFromDB(concertId);
 
     return NextResponse.json({
       success: true,
@@ -125,17 +126,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 本来はここでデータベースに保存
-    // Phase 1ではモックデータとして扱う
-    console.log("練習予定作成（モック）:", {
-      concertId,
-      title,
-      date: practiceDate,
-      venue,
-      items,
-      notes,
-      memo,
-      audioUrl,
+    // データベースに練習予定を作成
+    const newPractice = await prisma.practice.create({
+      data: {
+        concertId,
+        title,
+        date: practiceDate,
+        venue,
+        items,
+        notes,
+        memo,
+        audioUrl,
+      },
+    });
+    
+    console.log("練習予定作成完了:", {
+      practiceId: newPractice.id,
       createdBy: payload.userId,
     });
 
@@ -196,17 +202,23 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // 本来はここでデータベースを更新
-    // Phase 1ではモックデータとして扱う
-    console.log("練習予定更新（モック）:", {
+    // データベースの練習予定を更新
+    const updateData: any = {};
+    if (title !== undefined) updateData.title = title;
+    if (date !== undefined) updateData.date = new Date(date);
+    if (venue !== undefined) updateData.venue = venue;
+    if (items !== undefined) updateData.items = items;
+    if (notes !== undefined) updateData.notes = notes;
+    if (memo !== undefined) updateData.memo = memo;
+    if (audioUrl !== undefined) updateData.audioUrl = audioUrl;
+    
+    const updatedPractice = await prisma.practice.update({
+      where: { id: practiceId },
+      data: updateData,
+    });
+    
+    console.log("練習予定更新完了:", {
       practiceId,
-      title,
-      date,
-      venue,
-      items,
-      notes,
-      memo,
-      audioUrl,
       updatedBy: payload.userId,
     });
 
@@ -257,9 +269,12 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // 本来はここでデータベースから削除
-    // Phase 1ではモックデータとして扱う
-    console.log("練習予定削除（モック）:", {
+    // データベースから練習予定を削除
+    await prisma.practice.delete({
+      where: { id: practiceId },
+    });
+    
+    console.log("練習予定削除完了:", {
       practiceId,
       deletedBy: payload.userId,
     });

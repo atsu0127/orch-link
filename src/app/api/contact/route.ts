@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { mockContactInfo } from "@/lib/mock-data";
+import { getContactInfoFromDB } from "@/lib/seed-helpers";
+import { prisma } from "@/lib/db";
 
 /**
  * GET /api/contact
@@ -26,7 +27,8 @@ export async function GET(request: NextRequest) {
     }
 
     // 連絡先情報を取得（最初のアイテムを使用）
-    const contactInfo = mockContactInfo[0];
+    const contactInfoList = await getContactInfoFromDB();
+    const contactInfo = contactInfoList[0];
 
     if (!contactInfo) {
       return NextResponse.json(
@@ -92,11 +94,30 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // 本来はここでデータベースを更新
-    // Phase 1ではモックデータとして扱う
-    console.log("連絡先情報更新（モック）:", {
+    // 既存の連絡先情報を取得し、存在しない場合は作成
+    const existingContactInfo = await prisma.contactInfo.findFirst();
+    
+    if (existingContactInfo) {
+      // 更新
+      await prisma.contactInfo.update({
+        where: { id: existingContactInfo.id },
+        data: {
+          email,
+          description,
+        },
+      });
+    } else {
+      // 新規作成
+      await prisma.contactInfo.create({
+        data: {
+          email,
+          description,
+        },
+      });
+    }
+    
+    console.log("連絡先情報更新完了:", {
       email,
-      description,
       updatedBy: payload.userId,
     });
 

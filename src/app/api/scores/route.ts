@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { mockScores } from "@/lib/mock-data";
+import { getScoresByConcertFromDB } from "@/lib/seed-helpers";
+import { prisma } from "@/lib/db";
 
 /**
  * GET /api/scores
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 指定された演奏会の楽譜を取得
-    const scores = mockScores.filter(score => score.concertId === concertId);
+    const scores = await getScoresByConcertFromDB(concertId);
 
     return NextResponse.json({
       success: true,
@@ -97,12 +98,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 本来はここでデータベースに保存
-    // Phase 1ではモックデータとして扱う
-    console.log("楽譜作成（モック）:", {
-      concertId,
-      title,
-      url,
+    // データベースに楽譜を作成
+    const newScore = await prisma.score.create({
+      data: {
+        concertId,
+        title,
+        url,
+        isValid: true, // 新作成時は有効として設定
+      },
+    });
+    
+    console.log("楽譜作成完了:", {
+      scoreId: newScore.id,
       createdBy: payload.userId,
     });
 
@@ -154,14 +161,30 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // 本来はここでデータベースを更新
-    // Phase 1ではモックデータとして扱う
-    console.log("楽譜更新（モック）:", {
+    // データベースの楽譜を更新
+    const updateData: any = {};
+    if (title !== undefined) updateData.title = title;
+    if (url !== undefined) updateData.url = url;
+    
+    const updatedScore = await prisma.score.update({
+      where: { id: scoreId },
+      data: updateData,
+    });
+    
+    // コメントが指定されている場合は楽譜コメントとして追加
+    if (comment && comment.trim()) {
+      await prisma.scoreComment.create({
+        data: {
+          scoreId,
+          content: comment.trim(),
+        },
+      });
+    }
+    
+    console.log("楽譜更新完了:", {
       scoreId,
-      title,
-      url,
-      comment,
       updatedBy: payload.userId,
+      commentAdded: !!(comment && comment.trim()),
     });
 
     return NextResponse.json({
