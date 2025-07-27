@@ -59,7 +59,7 @@ export function LoginForm() {
     >
       <Paper shadow="md" p="xl" radius="md" className="w-full">
         <Title order={2} className="text-center mb-6">
-          オーケストラ・エキストラ連絡ポータル
+          Orch Link
         </Title>
 
         <form onSubmit={handleSubmit}>

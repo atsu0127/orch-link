@@ -47,7 +47,7 @@ export function Header({ selectedConcertId, onConcertChange }: HeaderProps) {
           {/* タイトルと演奏会選択 */}
           <Group>
             <Title order={3} className="text-blue-700">
-              オーケストラポータル
+              Orch Link
             </Title>
 
             {/* 演奏会選択ドロップダウン */}

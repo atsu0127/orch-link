@@ -17,7 +17,7 @@ export function Footer() {
           {/* メイン情報 */}
           <div>
             <Text size="lg" className="font-semibold mb-2">
-              オーケストラ・エキストラ連絡ポータル
+              Orch Link
             </Text>
             <Text size="sm" className="text-gray-300">
               演奏会情報の効率的な共有と管理をサポート
@@ -29,7 +29,7 @@ export function Footer() {
           {/* フッター情報 */}
           <Group justify="center" gap="xl" className="text-sm text-gray-400">
             <Text>
-              © {currentYear} Orchestra Extra Portal
+              © {currentYear} Orch Link
             </Text>
             <Text>
               Version 1.0.0
