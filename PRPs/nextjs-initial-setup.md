@@ -123,7 +123,7 @@ A fully functional Next.js 15 application with:
 │   │       │   ├── login/route.ts     # ログインAPI
 │   │       │   └── verify/route.ts    # JWT検証API
 │   │       ├── concerts/route.ts      # 演奏会管理API
-│   │       ├── attendance/route.ts    # 出欠フォームAPI
+│   │       ├── attendance/route.ts    # 出欠調整API
 │   │       ├── scores/route.ts        # 楽譜リンクAPI
 │   │       ├── practices/route.ts     # 練習予定API
 │   │       └── contact/route.ts       # 連絡先API
@@ -542,7 +542,7 @@ test_scenarios = [
   {
     name: "タブ機能",
     steps: [
-      "出欠フォームタブ表示",
+      "出欠調整タブ表示",
       "楽譜リンクタブ表示",
       "練習予定タブ表示",
       "連絡タブ表示",

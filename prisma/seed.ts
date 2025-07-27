@@ -48,7 +48,7 @@ async function main() {
     })),
   });
 
-  console.log("📋 出欠フォームの作成中...");
+  console.log("📋 出欠調整の作成中...");
   await prisma.attendanceForm.createMany({
     data: mockAttendanceForms.map(form => ({
       id: form.id,
@@ -116,7 +116,7 @@ async function main() {
     - 楽譜: ${scoreCount}件  
     - 楽譜コメント: ${scoreCommentCount}件
     - 練習予定: ${practiceCount}件
-    - 出欠フォーム: ${attendanceFormCount}件
+    - 出欠調整: ${attendanceFormCount}件
     - 連絡先情報: ${contactInfoCount}件`);
 }
 

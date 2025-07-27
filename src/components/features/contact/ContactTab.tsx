@@ -141,7 +141,7 @@ export function ContactTab({}: ContactTabProps) {
           <div>
             <Text size="sm" className="font-semibold mb-1">Q. 練習の参加可否を変更したい</Text>
             <Text size="sm" className="text-gray-600 ml-4">
-              A. 出欠フォームから再度送信するか、メールで直接ご連絡ください。
+              A. 出欠調整から再度送信するか、メールで直接ご連絡ください。
             </Text>
           </div>
           

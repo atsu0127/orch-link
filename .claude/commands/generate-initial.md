@@ -10,9 +10,8 @@ Follow the steps below to create the issue and INITIAL.md:
    1. Review the codebase, create a draft based on your findings, and confirm it with the user.
    2. If the content cannot be inferred, do not force a draft—defer to the user instead.
    3. Ask and confirm one point at a time to make it easier for the user to respond.
-   4. Write the issue in Japanese.
 4. Review the codebase to verify the validity of the content. If there are unclear points, ask the user to provide additional details.
-5. Once the content is complete, update the issue in Japanese.
+5. Once the content is complete, create Github issue in Japanese.
 6. Create an English INITIAL.md summarizing the issue.
 
 User input: ${ARGUMENTS}

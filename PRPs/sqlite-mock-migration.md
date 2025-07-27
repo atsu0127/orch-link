@@ -120,7 +120,7 @@ src/
 The existing Prisma schema already matches mock data structure:
 ```typescript
 // 演奏会 (Concerts) - main entity
-// 出欠フォーム (AttendanceForms) - linked to concerts
+// 出欠調整 (AttendanceForms) - linked to concerts
 // 楽譜 (Scores) - linked to concerts
 // 楽譜コメント (ScoreComments) - linked to scores  
 // 練習予定 (Practices) - linked to concerts
