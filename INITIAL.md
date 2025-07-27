@@ -1,27 +1,39 @@
 ## FEATURE:
+Enhance practice schedule tab with separate start/end times, address field, and video recording support. Currently, practice schedules only store a single date/time, venue name without address, and audio recording only. This enhancement will add:
 
-Update terminology from "出欠フォーム" (attendance form) to "出欠調整" (attendance coordination) throughout the application to accurately reflect that these are external links to coordination apps, not actual forms within the application. This includes updating UI components, type definitions, comments, and documentation to use consistent terminology that clearly indicates users will be redirected to external services like Google Forms or Microsoft Forms.
+1. Separate startTime and endTime fields instead of single date field
+2. Optional address field for practice venues (free text)
+3. videoUrl field in addition to existing audioUrl field
+
+The implementation requires database schema changes, TypeScript interface updates, API route modifications, and frontend component enhancements to display the new time format and additional information fields.
 
 ## EXAMPLES:
-
-No specific example files are provided in the examples/ folder for this task. The changes involve updating existing components and maintaining current functionality while improving terminology clarity.
+No specific examples folder available, but existing practice-related files provide patterns:
+- `src/components/features/practices/PracticesList.tsx` - List view component
+- `src/components/features/practices/PracticeDetail.tsx` - Detail view component
+- `src/types/index.ts` - Practice interface definition
+- `src/app/api/practices/route.ts` - API endpoints for CRUD operations
 
 ## DOCUMENTATION:
-
-- Project documentation in docs/screen_design.md contains terminology that needs updating
-- Component comments and JSDoc should be updated for clarity
-- Type definitions in src/types/index.ts need comment updates
-- CLAUDE.md indicates all code comments should be in Japanese
+- Project documentation in `docs/` folder:
+  - `docs/requirements.md` - Feature requirements specification
+  - `docs/architecture.md` - System architecture and GCP services
+  - `docs/screen_design.md` - UI/UX specifications
+  - `docs/plan.md` - Development roadmap
+- Prisma documentation: https://www.prisma.io/docs/
+- Next.js App Router documentation: https://nextjs.org/docs/app
+- Mantine UI components: https://mantine.dev/
 
 ## OTHER CONSIDERATIONS:
-
-- Maintain consistency across all Japanese terminology throughout the application
-- Ensure the new terminology clearly communicates that users will be redirected to external services
-- Do not change any functional behavior, only update text/terminology
-- Consider user experience - the new terminology should reduce confusion about what happens when users click the links
-- Keep mobile-responsive design considerations intact as this is the primary use case
-- Maintain the existing icon usage and visual design while updating text
+- **Database Migration**: Existing data with single `date` field needs migration strategy. Suggest treating existing `date` as `startTime` and leaving `endTime` as null for backward compatibility
+- **API Backward Compatibility**: Consider maintaining support for existing API calls while adding new fields
+- **Time Zone Handling**: Ensure consistent time zone handling between start and end times
+- **Validation**: Add proper validation to ensure endTime is after startTime
+- **UI/UX**: Time display format should be user-friendly (e.g., "10:00 - 12:00" instead of full ISO strings)
+- **Mobile Responsiveness**: Ensure new fields display properly on mobile devices (primary use case)
+- **Empty State Handling**: Gracefully handle cases where endTime, address, or videoUrl are not provided
+- **Video Link Validation**: Consider adding URL validation for video links similar to existing audio functionality
+- **Japanese Localization**: All UI text should be in Japanese as per project requirements
 
 ## ISSUE LINK:
-
-https://github.com/atsu0127/orch-link/issues/3
+https://github.com/atsu0127/orch-link/issues/5
