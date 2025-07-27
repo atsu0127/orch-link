@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ユーザーモデル（管理者・閲覧者）
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+  role  String // "admin" | "viewer"
+  name  String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// 演奏会モデル
+model Concert {
+  id       String   @id @default(cuid())
+  title    String   // 演奏会タイトル
+  date     DateTime // 開催日
+  venue    String   // 開催場所
+  isActive Boolean  @default(true) // アクティブ状態
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // リレーション
+  attendanceForms AttendanceForm[]
+  scores          Score[]
+  practices       Practice[]
+
+  @@map("concerts")
+}
+
+// 出欠フォームモデル
+model AttendanceForm {
+  id          String  @id @default(cuid())
+  concertId   String
+  title       String  // フォームタイトル
+  url         String  // 外部フォームURL
+  description String? // 補足説明
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // リレーション
+  concert Concert @relation(fields: [concertId], references: [id], onDelete: Cascade)
+
+  @@map("attendance_forms")
+}
+
+// 楽譜モデル
+model Score {
+  id        String  @id @default(cuid())
+  concertId String
+  title     String  // 曲名
+  url       String  // 楽譜URL
+  isValid   Boolean @default(true) // リンク有効性
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // リレーション
+  concert  Concert        @relation(fields: [concertId], references: [id], onDelete: Cascade)
+  comments ScoreComment[]
+
+  @@map("scores")
+}
+
+// 楽譜コメントモデル（更新履歴）
+model ScoreComment {
+  id      String @id @default(cuid())
+  scoreId String
+  content String // コメント内容
+  
+  createdAt DateTime @default(now())
+  
+  // リレーション
+  score Score @relation(fields: [scoreId], references: [id], onDelete: Cascade)
+
+  @@map("score_comments")
+}
+
+// 練習予定モデル
+model Practice {
+  id        String    @id @default(cuid())
+  concertId String
+  title     String    // 練習タイトル
+  date      DateTime  // 練習日時
+  venue     String    // 練習場所
+  items     String?   // 持ち物
+  notes     String?   // 注意事項
+  memo      String?   // メモ
+  audioUrl  String?   // 関連録音URL
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // リレーション
+  concert Concert @relation(fields: [concertId], references: [id], onDelete: Cascade)
+
+  @@map("practices")
+}
+
+// 連絡先情報モデル
+model ContactInfo {
+  id          String @id @default(cuid())
+  email       String // 管理者メールアドレス
+  description String // 説明文
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact_info")
+}
