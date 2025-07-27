@@ -90,15 +90,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    * ログアウト処理関数
    * 状態をクリアし、クッキーを削除
    */
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
 
-    // クッキーを削除（有効期限を過去に設定）
-    document.cookie =
-      "auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // クッキーを含める
+    });
 
-    // ページをリロードしてログインページに戻る
-    window.location.href = "/login";
+    if (response.ok) {
+      window.location.href = "/login";
+    }
   };
 
   // コンテキスト値

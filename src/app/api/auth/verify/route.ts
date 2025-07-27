@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTokenFromCookie, verifyToken } from "@/lib/auth";
+import { verifyToken } from "@/lib/auth";
 
 /**
  * GET /api/auth/verify
@@ -44,30 +44,6 @@ export async function GET(request: NextRequest) {
     console.error("Token verification error:", error);
     return NextResponse.json(
       { authenticated: false, error: "サーバーエラーが発生しました" },
-      { status: 500 }
-    );
-  }
-}
-
-/**
- * POST /api/auth/logout
- * ログアウト処理
- */
-export async function POST(request: NextRequest) {
-  try {
-    const response = NextResponse.json({
-      success: true,
-      message: "ログアウトしました",
-    });
-
-    // 認証クッキーを削除
-    response.cookies.delete("auth-token");
-
-    return response;
-  } catch (error) {
-    console.error("Logout error:", error);
-    return NextResponse.json(
-      { error: "サーバーエラーが発生しました" },
       { status: 500 }
     );
   }
