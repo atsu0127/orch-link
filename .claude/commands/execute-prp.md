@@ -21,29 +21,34 @@ Implement a feature using using the PRP file.
    - Use the TodoWrite tool to create and track your implementation plan.
    - Identify implementation patterns from existing code to follow.
 
-3. **Execute the plan**
+3. **Prepare Git**
+
+   - Create remote branch `${USERNAME}/<feat or bugfix>/<featurename ot bugname>` from default branch
+   - Switch to created branch
+
+4. **Execute the plan**
 
    - Execute the PRP
    - Implement all the code
 
-4. **Validate**
+5. **Validate**
 
    - Run each validation command
    - Fix any failures
    - Re-run until all pass
 
-5. **Complete**
+6. **Complete**
 
    - Ensure all checklist items done
    - Run final validation suite
    - Report completion status
    - Read the PRP again to ensure you have implemented everything
 
-6. **Reference the PRP**
+7. **Reference the PRP**
 
    - You can always reference the PRP again if needed
 
-7. **Create PullRequest**
+8. **Create PullRequest**
 
    - Please create the Pull Request based on the template below.
    - Think in English, but write in Japanese.
@@ -61,5 +66,8 @@ Note: If validation fails, use error patterns in PRP to fix and retry.
 
 ## 注意
 [Bullet any points that require special attention during review]
+
+## Issue
+[Put Issue link to close when merged]
 
 ```

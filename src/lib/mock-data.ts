@@ -42,7 +42,7 @@ export const mockConcerts: Concert[] = [
   },
 ];
 
-// 出欠フォームモックデータ
+// 出欠調整モックデータ
 export const mockAttendanceForms: AttendanceForm[] = [
   {
     id: "attendance-1",
