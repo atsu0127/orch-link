@@ -17,7 +17,7 @@ model User {
   email String @unique
   role  String // "admin" | "viewer"
   name  String?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -31,10 +31,10 @@ model Concert {
   date     DateTime // 開催日
   venue    String   // 開催場所
   isActive Boolean  @default(true) // アクティブ状態
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // リレーション
   attendanceForms AttendanceForm[]
   scores          Score[]
@@ -50,10 +50,10 @@ model AttendanceForm {
   title       String  // フォームタイトル
   url         String  // 外部フォームURL
   description String? // 補足説明
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // リレーション
   concert Concert @relation(fields: [concertId], references: [id], onDelete: Cascade)
 
@@ -67,10 +67,10 @@ model Score {
   title     String  // 曲名
   url       String  // 楽譜URL
   isValid   Boolean @default(true) // リンク有効性
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // リレーション
   concert  Concert        @relation(fields: [concertId], references: [id], onDelete: Cascade)
   comments ScoreComment[]
@@ -83,9 +83,9 @@ model ScoreComment {
   id      String @id @default(cuid())
   scoreId String
   content String // コメント内容
-  
+
   createdAt DateTime @default(now())
-  
+
   // リレーション
   score Score @relation(fields: [scoreId], references: [id], onDelete: Cascade)
 
@@ -103,10 +103,10 @@ model Practice {
   notes     String?   // 注意事項
   memo      String?   // メモ
   audioUrl  String?   // 関連録音URL
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // リレーション
   concert Concert @relation(fields: [concertId], references: [id], onDelete: Cascade)
 
@@ -118,7 +118,7 @@ model ContactInfo {
   id          String @id @default(cuid())
   email       String // 管理者メールアドレス
   description String // 説明文
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

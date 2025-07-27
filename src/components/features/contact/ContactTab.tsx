@@ -44,7 +44,7 @@ export function ContactTab({}: ContactTabProps) {
    * mailtoリンクでメーラーを起動
    */
   const handleSendEmail = () => {
-    const subject = encodeURIComponent('オーケストラ・エキストラからのお問い合わせ');
+    const subject = encodeURIComponent('Orch Link エキストラからのお問い合わせ');
     const body = encodeURIComponent(`
 演奏会についてお問い合わせがあります。
 

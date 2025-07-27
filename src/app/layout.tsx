@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "オーケストラ・エキストラ連絡ポータル",
+  title: "Orch Link",
   description: "オーケストラエキストラ向けの演奏会情報共有ポータル",
 };
 
