@@ -50,7 +50,7 @@ Implement a feature using using the PRP file.
 
 8. **Create PullRequest**
 
-   - Please create the Pull Request based on the template below.
+   - Please create the Pull Request based on the template below(use MCP Tool).
    - Think in English, but write in Japanese.
 
 Note: If validation fails, use error patterns in PRP to fix and retry.
