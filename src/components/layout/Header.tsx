@@ -10,10 +10,11 @@ import {
   Text,
   Container,
 } from "@mantine/core";
-import { IconChevronDown, IconLogout, IconUser } from "@tabler/icons-react";
+import { IconChevronDown, IconLogout, IconUser, IconSettings } from "@tabler/icons-react";
 import { useAuth } from "@/components/features/auth/AuthProvider";
 import { getActiveConcerts } from "@/lib/mock-data";
 import { Concert } from "@/types";
+import Link from "next/link";
 
 interface HeaderProps {
   selectedConcertId: string | null;
@@ -98,6 +99,17 @@ export function Header({ selectedConcertId, onConcertChange }: HeaderProps) {
                 )}
 
                 <Menu.Divider />
+
+                {/* 管理者のみ管理画面リンクを表示 */}
+                {user.role === "admin" && (
+                  <Menu.Item
+                    leftSection={<IconSettings size="1rem" />}
+                    component={Link}
+                    href="/admin/concerts"
+                  >
+                    管理画面
+                  </Menu.Item>
+                )}
 
                 <Menu.Item
                   leftSection={<IconLogout size="1rem" />}

@@ -1,9 +1,18 @@
 "use client";
 
 import React from "react";
-import { LoadingOverlay, Alert, Container, Paper, Title, Text, Group, Button } from "@mantine/core";
+import {
+  LoadingOverlay,
+  Alert,
+  Container,
+  Paper,
+  Title,
+  Text,
+  Group,
+  Button,
+} from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
-import { useAuth } from "@/components/features/auth/AuthProvider";
+import { AuthProvider, useAuth } from "@/components/features/auth/AuthProvider";
 import Link from "next/link";
 
 interface AdminLayoutProps {
@@ -11,10 +20,10 @@ interface AdminLayoutProps {
 }
 
 /**
- * 管理者専用レイアウトコンポーネント
- * 管理者権限のチェックと共通レイアウトを提供
+ * 管理者権限チェックコンポーネント
+ * AuthProvider内でuseAuthを使用するための内部コンポーネント
  */
-export default function AdminLayout({ children }: AdminLayoutProps) {
+function AdminContent({ children }: AdminLayoutProps) {
   const { user, isLoading } = useAuth();
 
   // ローディング中
@@ -40,8 +49,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Container size="sm">
           <Paper shadow="md" p="xl" radius="md" className="text-center">
-            <Alert 
-              icon={<IconAlertCircle size="1rem" />} 
+            <Alert
+              icon={<IconAlertCircle size="1rem" />}
               color="red"
               className="mb-6"
             >
@@ -51,22 +60,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               アクセス権限がありません
             </Title>
             <Text className="text-gray-600 mb-6">
-              この機能は管理者のみ利用できます。<br />
+              この機能は管理者のみ利用できます。
+              <br />
               管理者権限でログインし直してください。
             </Text>
             <Group justify="center">
-              <Button 
-                component={Link} 
-                href="/" 
+              <Button
+                component={Link}
+                href="/"
                 leftSection={<IconArrowLeft size={16} />}
                 variant="light"
               >
                 ホームに戻る
               </Button>
-              <Button 
-                component={Link} 
-                href="/login"
-              >
+              <Button component={Link} href="/login">
                 ログイン画面へ
               </Button>
             </Group>
@@ -95,9 +102,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Text size="sm" className="text-gray-600">
                 ログイン中: 管理者
               </Text>
-              <Button 
-                component={Link} 
-                href="/" 
+              <Button
+                component={Link}
+                href="/"
                 variant="light"
                 leftSection={<IconArrowLeft size={16} />}
               >
@@ -110,10 +117,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* メインコンテンツ */}
       <Container size="xl" p="md">
-        <div className="py-6">
-          {children}
-        </div>
+        <div className="py-6">{children}</div>
       </Container>
     </div>
+  );
+}
+
+/**
+ * 管理者専用レイアウトコンポーネント
+ * AuthProviderでラップして認証機能を提供
+ */
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  return (
+    <AuthProvider>
+      <AdminContent>{children}</AdminContent>
+    </AuthProvider>
   );
 }
