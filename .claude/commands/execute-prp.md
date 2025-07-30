@@ -50,6 +50,7 @@ Implement a feature using using the PRP file.
 
 8. **Create PullRequest**
 
+   - Please make commits at an appropriate granularity with git.
    - Please create the Pull Request based on the template below(use MCP Tool).
    - Think in English, but write in Japanese.
 
@@ -62,7 +63,7 @@ Note: If validation fails, use error patterns in PRP to fix and retry.
 [Briefly describe the bug or new feature]
 
 ## 詳細
-[List the actual changes made, concisely]
+[List the actual changes made, concisely. with commit id.]
 
 ## 注意
 [Bullet any points that require special attention during review]

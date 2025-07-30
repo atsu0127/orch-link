@@ -97,12 +97,15 @@ model Practice {
   id        String    @id @default(cuid())
   concertId String
   title     String    // 練習タイトル
-  date      DateTime  // 練習日時
+  startTime DateTime  // 開始日時
+  endTime   DateTime? // 終了日時（オプション）
   venue     String    // 練習場所
+  address   String?   // 住所（オプション）
   items     String?   // 持ち物
   notes     String?   // 注意事項
   memo      String?   // メモ
   audioUrl  String?   // 関連録音URL
+  videoUrl  String?   // 関連録画URL
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

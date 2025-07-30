@@ -101,29 +101,50 @@ export async function POST(request: NextRequest) {
     const { 
       concertId, 
       title, 
-      date, 
+      startTime, 
+      endTime,
       venue, 
+      address,
       items, 
       notes, 
       memo, 
-      audioUrl 
+      audioUrl,
+      videoUrl 
     } = body;
 
     // 入力値検証
-    if (!concertId || !title || !date || !venue) {
+    if (!concertId || !title || !startTime || !venue) {
       return NextResponse.json(
         { error: "必須項目が不足しています" },
         { status: 400 }
       );
     }
 
-    // 日時の形式検証
-    const practiceDate = new Date(date);
-    if (isNaN(practiceDate.getTime())) {
+    // 開始時間の形式検証
+    const practiceStartTime = new Date(startTime);
+    if (isNaN(practiceStartTime.getTime())) {
       return NextResponse.json(
-        { error: "有効な日時を入力してください" },
+        { error: "有効な開始時間を入力してください" },
         { status: 400 }
       );
+    }
+
+    // 終了時間の検証（提供されている場合）
+    let practiceEndTime;
+    if (endTime) {
+      practiceEndTime = new Date(endTime);
+      if (isNaN(practiceEndTime.getTime())) {
+        return NextResponse.json(
+          { error: "有効な終了時間を入力してください" },
+          { status: 400 }
+        );
+      }
+      if (practiceEndTime <= practiceStartTime) {
+        return NextResponse.json(
+          { error: "終了時間は開始時間より後に設定してください" },
+          { status: 400 }
+        );
+      }
     }
 
     // データベースに練習予定を作成
@@ -131,12 +152,15 @@ export async function POST(request: NextRequest) {
       data: {
         concertId,
         title,
-        date: practiceDate,
+        startTime: practiceStartTime,
+        endTime: practiceEndTime,
         venue,
+        address,
         items,
         notes,
         memo,
         audioUrl,
+        videoUrl,
       },
     });
     
@@ -186,12 +210,15 @@ export async function PUT(request: NextRequest) {
     const { 
       practiceId, 
       title, 
-      date, 
-      venue, 
+      startTime,
+      endTime, 
+      venue,
+      address, 
       items, 
       notes, 
       memo, 
-      audioUrl 
+      audioUrl,
+      videoUrl 
     } = body;
 
     // 入力値検証
@@ -202,17 +229,32 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // 時間の検証（更新時）
+    if (startTime !== undefined && endTime !== undefined) {
+      const newStartTime = new Date(startTime);
+      const newEndTime = new Date(endTime);
+      if (!isNaN(newStartTime.getTime()) && !isNaN(newEndTime.getTime()) && newEndTime <= newStartTime) {
+        return NextResponse.json(
+          { error: "終了時間は開始時間より後に設定してください" },
+          { status: 400 }
+        );
+      }
+    }
+
     // データベースの練習予定を更新
-    const updateData: any = {};
+    const updateData: Record<string, any> = {};
     if (title !== undefined) updateData.title = title;
-    if (date !== undefined) updateData.date = new Date(date);
+    if (startTime !== undefined) updateData.startTime = new Date(startTime);
+    if (endTime !== undefined) updateData.endTime = endTime ? new Date(endTime) : null;
     if (venue !== undefined) updateData.venue = venue;
+    if (address !== undefined) updateData.address = address;
     if (items !== undefined) updateData.items = items;
     if (notes !== undefined) updateData.notes = notes;
     if (memo !== undefined) updateData.memo = memo;
     if (audioUrl !== undefined) updateData.audioUrl = audioUrl;
+    if (videoUrl !== undefined) updateData.videoUrl = videoUrl;
     
-    const updatedPractice = await prisma.practice.update({
+    await prisma.practice.update({
       where: { id: practiceId },
       data: updateData,
     });
