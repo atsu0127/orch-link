@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   const publicPaths = ["/login", "/api/auth/login", "/api/auth/verify"];
 
   // 管理者専用パス
-  const adminPaths = ["/admin"];
+  const adminPaths = ["/admin", "/admin/concerts"];
 
   // 保護が必要なAPIパス
   const protectedApiPaths = [

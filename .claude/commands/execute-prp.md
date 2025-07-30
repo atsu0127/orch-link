@@ -69,6 +69,6 @@ Note: If validation fails, use error patterns in PRP to fix and retry.
 [Bullet any points that require special attention during review]
 
 ## Issue
-[Put Issue link to close when merged]
+close [Put Issue link to close when merged]
 
 ```
