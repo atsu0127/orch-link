@@ -19,10 +19,11 @@ import {
   IconBackpack,
   IconInfoCircle,
   IconNote,
-  IconMusic
+  IconMusic,
+  IconVideo
 } from '@tabler/icons-react';
 import { Practice } from '@/types';
-import { formatDate } from '@/lib/mock-data';
+import { formatDate, formatTimeRange } from '@/lib/mock-data';
 
 interface PracticeDetailProps {
   practice: Practice;
@@ -34,7 +35,7 @@ interface PracticeDetailProps {
  * 個別の練習予定の詳細情報を表示
  */
 export function PracticeDetail({ practice, onBack }: PracticeDetailProps) {
-  const isPast = practice.date <= new Date();
+  const isPast = practice.startTime <= new Date();
 
   return (
     <Stack gap="lg">
@@ -76,7 +77,10 @@ export function PracticeDetail({ practice, onBack }: PracticeDetailProps) {
               <div>
                 <Text size="sm" className="text-gray-600 mb-1">日時</Text>
                 <Text size="lg" className="font-semibold">
-                  {formatDate(practice.date)}
+                  {practice.endTime 
+                    ? `${formatDate(practice.startTime).split(' ')[0]} ${formatTimeRange(practice.startTime, practice.endTime)}`
+                    : formatDate(practice.startTime)
+                  }
                 </Text>
               </div>
             </Group>
@@ -89,6 +93,11 @@ export function PracticeDetail({ practice, onBack }: PracticeDetailProps) {
                 <Text size="lg" className="font-semibold">
                   {practice.venue}
                 </Text>
+                {practice.address && (
+                  <Text size="sm" className="text-gray-600 mt-1">
+                    {practice.address}
+                  </Text>
+                )}
               </div>
             </Group>
           </Stack>
@@ -147,6 +156,20 @@ export function PracticeDetail({ practice, onBack }: PracticeDetailProps) {
                   <source src={practice.audioUrl} type="audio/mpeg" />
                   お使いのブラウザは音声再生に対応していません。
                 </audio>
+              </div>
+            )}
+
+            {/* 関連録画 */}
+            {practice.videoUrl && (
+              <div>
+                <Group gap="sm" className="mb-3">
+                  <IconVideo size="1.2rem" className="text-indigo-600" />
+                  <Title order={5}>関連録画</Title>
+                </Group>
+                <video controls className="w-full">
+                  <source src={practice.videoUrl} type="video/mp4" />
+                  お使いのブラウザは動画再生に対応していません。
+                </video>
               </div>
             )}
           </Stack>

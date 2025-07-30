@@ -52,12 +52,15 @@ export interface Practice {
   id: string;
   concertId: string;
   title: string; // 練習タイトル
-  date: Date; // 練習日時
+  startTime: Date; // 開始日時
+  endTime?: Date; // 終了日時（オプション）
   venue: string; // 練習場所
+  address?: string; // 住所（オプション）
   items?: string; // 持ち物
   notes?: string; // 注意事項
   memo?: string; // メモ
   audioUrl?: string; // 関連録音URL
+  videoUrl?: string; // 関連録画URL
   updatedAt: Date; // 最終更新日時
 }
 

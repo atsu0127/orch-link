@@ -18,7 +18,7 @@ import {
   IconClock
 } from '@tabler/icons-react';
 import { Practice } from '@/types';
-import { formatDate } from '@/lib/mock-data';
+import { formatDate, formatTimeRange } from '@/lib/mock-data';
 import { PracticeDetail } from './PracticeDetail';
 
 interface PracticesListProps {
@@ -60,8 +60,8 @@ export function PracticesList({ practices }: PracticesListProps) {
 
   // 現在時刻で過去・未来の練習を分ける
   const now = new Date();
-  const upcomingPractices = practices.filter(p => p.date > now);
-  const pastPractices = practices.filter(p => p.date <= now);
+  const upcomingPractices = practices.filter(p => p.startTime > now);
+  const pastPractices = practices.filter(p => p.startTime <= now);
 
   return (
     <Stack gap="lg">
@@ -158,7 +158,10 @@ function PracticeCard({ practice, onSelect, isPast }: PracticeCardProps) {
             <Group gap="sm">
               <IconClock size="1rem" className="text-gray-500" />
               <Text size="sm" className="text-gray-700">
-                {formatDate(practice.date)}
+                {practice.endTime 
+                  ? `${formatDate(practice.startTime).split(' ')[0]} ${formatTimeRange(practice.startTime, practice.endTime)}`
+                  : formatDate(practice.startTime)
+                }
               </Text>
             </Group>
             

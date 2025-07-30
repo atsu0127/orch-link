@@ -121,20 +121,25 @@ export const mockPractices: Practice[] = [
     id: "practice-1",
     concertId: "concert-1",
     title: "第9番全楽章通し練習",
-    date: new Date("2025-12-15T13:00:00"),
+    startTime: new Date("2025-12-15T13:00:00"),
+    endTime: new Date("2025-12-15T17:00:00"),
     venue: "文京シビックホール リハーサル室",
+    address: "東京都文京区春日1-16-21",
     items: "楽譜、譜面台、筆記用具",
     notes: "第4楽章の合唱との合わせがあります。ソリストも参加予定です。",
     memo: "駐車場は混雑が予想されます。公共交通機関をご利用ください。",
     audioUrl: "https://example.com/rehearsal-audio-1.mp3",
+    videoUrl: "https://example.com/rehearsal-video-1.mp4",
     updatedAt: oneWeekAgo,
   },
   {
     id: "practice-2",
     concertId: "concert-1", 
     title: "セクション別練習（弦楽器）",
-    date: new Date("2025-12-08T10:00:00"),
+    startTime: new Date("2025-12-08T10:00:00"),
+    endTime: new Date("2025-12-08T12:00:00"),
     venue: "杉並公会堂 小ホール",
+    address: "東京都杉並区上荻1-23-15",
     items: "楽譜、鉛筆、消しゴム",
     notes: "弦楽器セクションのみの練習です。細かいアンサンブルを中心に練習します。",
     memo: "昼食は近隣のコンビニまたはレストランをご利用ください。",
@@ -144,7 +149,7 @@ export const mockPractices: Practice[] = [
     id: "practice-3",
     concertId: "concert-2",
     title: "ディズニーメドレー初回合わせ",
-    date: oneMonthLater,
+    startTime: oneMonthLater,
     venue: "豊島区民センター 文化ホール",
     items: "楽譜、水分補給用飲み物",
     notes: "初回の合わせ練習です。テンポやダイナミクスを中心に確認します。",
@@ -155,12 +160,15 @@ export const mockPractices: Practice[] = [
     id: "practice-4",
     concertId: "concert-1",
     title: "ゲネプロ（本番前最終リハーサル）", 
-    date: new Date("2025-12-20T10:00:00"),
+    startTime: new Date("2025-12-20T10:00:00"),
+    endTime: new Date("2025-12-20T16:00:00"),
     venue: "サントリーホール 大ホール",
+    address: "東京都港区赤坂1-13-1",
     items: "本番衣装、楽譜、全ての必要用具",
     notes: "本番と同じ条件でのゲネプロです。遅刻厳禁でお願いします。",
     memo: "リハーサル後、本番まで控室で待機となります。",
     audioUrl: "https://example.com/general-rehearsal.mp3",
+    videoUrl: "https://example.com/general-rehearsal.mp4",
     updatedAt: oneWeekAgo,
   },
 ];
@@ -186,7 +194,7 @@ export function getConcertData(concertId: string) {
     scores: mockScores.filter(s => s.concertId === concertId),
     practices: mockPractices
       .filter(p => p.concertId === concertId)
-      .sort((a, b) => a.date.getTime() - b.date.getTime()),
+      .sort((a, b) => a.startTime.getTime() - b.startTime.getTime()),
   };
 }
 
@@ -213,4 +221,18 @@ export function formatDateOnly(date: Date): string {
     month: 'long', 
     day: 'numeric',
   }).format(date);
+}
+
+// ユーティリティ関数：時間範囲フォーマット
+export function formatTimeRange(startTime: Date, endTime?: Date): string {
+  const timeFormat = new Intl.DateTimeFormat('ja-JP', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  
+  const start = timeFormat.format(startTime);
+  if (!endTime) return start;
+  
+  const end = timeFormat.format(endTime);
+  return `${start} - ${end}`;
 }

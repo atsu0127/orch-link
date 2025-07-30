@@ -21,7 +21,7 @@ export async function getConcertDataFromDB(concertId: string) {
         orderBy: { updatedAt: 'desc' }
       },
       practices: {
-        orderBy: { date: 'asc' }
+        orderBy: { startTime: 'asc' }
       }
     }
   });
@@ -31,9 +31,9 @@ export async function getConcertDataFromDB(concertId: string) {
   // PATTERN: モックデータと同じ構造でレスポンスを返す
   return {
     concert,
-    attendanceForms: concert.attendanceForms,
-    scores: concert.scores,
-    practices: concert.practices,
+    attendanceForms: concert.attendanceForms || [],
+    scores: concert.scores || [],
+    practices: concert.practices || [],
   };
 }
 
@@ -65,7 +65,7 @@ export async function getAllConcertsFromDB() {
 export async function getPracticesByConcertFromDB(concertId: string) {
   return await prisma.practice.findMany({
     where: { concertId },
-    orderBy: { date: 'asc' }
+    orderBy: { startTime: 'asc' }
   });
 }
 
