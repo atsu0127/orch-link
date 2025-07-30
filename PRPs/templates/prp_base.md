@@ -220,7 +220,6 @@ curl -X POST http://localhost:8000/feature \
 - [ ] Logs are informative but not verbose
 - [ ] Documentation updated if needed
 - [ ] Issue updated if needed
-- [ ] Pull Request is created
 
 ---
 
