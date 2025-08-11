@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { 
-  Paper, 
-  Title, 
-  Text, 
-  Button, 
+import React from "react";
+import {
+  Paper,
+  Title,
+  Text,
+  Button,
   Stack,
   Group,
   Badge,
   Alert,
-  Divider
-} from '@mantine/core';
-import { 
-  IconArrowLeft, 
-  IconClock, 
-  IconMapPin, 
+  Divider,
+} from "@mantine/core";
+import {
+  IconArrowLeft,
+  IconClock,
+  IconMapPin,
   IconBackpack,
   IconInfoCircle,
   IconNote,
   IconMusic,
-  IconVideo
-} from '@tabler/icons-react';
-import { Practice } from '@/types';
-import { formatDate, formatTimeRange } from '@/lib/mock-data';
+  IconVideo,
+} from "@tabler/icons-react";
+import { Practice } from "@/types";
+import { formatDate, formatTimeRange } from "@/lib/utils";
 
 interface PracticeDetailProps {
   practice: Practice;
@@ -41,8 +41,8 @@ export function PracticeDetail({ practice, onBack }: PracticeDetailProps) {
     <Stack gap="lg">
       {/* 戻るボタン */}
       <Group>
-        <Button 
-          variant="subtle" 
+        <Button
+          variant="subtle"
           leftSection={<IconArrowLeft size="1rem" />}
           onClick={onBack}
         >
@@ -75,12 +75,18 @@ export function PracticeDetail({ practice, onBack }: PracticeDetailProps) {
             <Group gap="sm">
               <IconClock size="1.2rem" className="text-blue-600" />
               <div>
-                <Text size="sm" className="text-gray-600 mb-1">日時</Text>
+                <Text size="sm" className="text-gray-600 mb-1">
+                  日時
+                </Text>
                 <Text size="lg" className="font-semibold">
-                  {practice.endTime 
-                    ? `${formatDate(practice.startTime).split(' ')[0]} ${formatTimeRange(practice.startTime, practice.endTime)}`
-                    : formatDate(practice.startTime)
-                  }
+                  {practice.endTime
+                    ? `${
+                        formatDate(practice.startTime).split(" ")[0]
+                      } ${formatTimeRange(
+                        practice.startTime,
+                        practice.endTime
+                      )}`
+                    : formatDate(practice.startTime)}
                 </Text>
               </div>
             </Group>
@@ -89,7 +95,9 @@ export function PracticeDetail({ practice, onBack }: PracticeDetailProps) {
             <Group gap="sm" align="flex-start">
               <IconMapPin size="1.2rem" className="text-red-600 mt-1" />
               <div>
-                <Text size="sm" className="text-gray-600 mb-1">練習場所</Text>
+                <Text size="sm" className="text-gray-600 mb-1">
+                  練習場所
+                </Text>
                 <Text size="lg" className="font-semibold">
                   {practice.venue}
                 </Text>
@@ -186,10 +194,12 @@ export function PracticeDetail({ practice, onBack }: PracticeDetailProps) {
       {/* 補足情報 */}
       <Alert color="blue" variant="light">
         <Text size="sm">
-          <strong>練習について：</strong><br />
-          • 練習開始15分前には会場にお越しください<br />
-          • 遅刻・欠席の場合は事前にご連絡ください<br />
-          • 録音がある場合は個人練習の参考にご活用ください
+          <strong>練習について：</strong>
+          <br />
+          • 練習開始15分前には会場にお越しください
+          <br />
+          • 遅刻・欠席の場合は事前にご連絡ください
+          <br />• 録音がある場合は個人練習の参考にご活用ください
         </Text>
       </Alert>
     </Stack>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Group,
   Title,
@@ -12,21 +12,24 @@ import {
 } from "@mantine/core";
 import { IconChevronDown, IconLogout, IconUser } from "@tabler/icons-react";
 import { useAuth } from "@/components/features/auth/AuthProvider";
-import { getActiveConcerts } from "@/lib/mock-data";
 import { Concert } from "@/types";
 
 interface HeaderProps {
   selectedConcertId: string | null;
   onConcertChange: (concertId: string) => void;
+  concerts: Concert[];
 }
 
 /**
  * ヘッダーコンポーネント
  * 演奏会選択ドロップダウンとユーザー情報表示を含む
  */
-export function Header({ selectedConcertId, onConcertChange }: HeaderProps) {
+export function Header({
+  selectedConcertId,
+  onConcertChange,
+  concerts,
+}: HeaderProps) {
   const { user, logout } = useAuth();
-  const [concerts] = useState<Concert[]>(getActiveConcerts());
 
   // 演奏会選択肢データの準備
   const concertOptions = concerts.map((concert) => ({

@@ -6,6 +6,8 @@ Implement a feature using using the PRP file.
 
 ## Execution Process
 
+**USE SERENA MCP if you want to check codebase**
+
 1. **Load PRP**
 
    - Read the specified PRP file
@@ -50,7 +52,7 @@ Implement a feature using using the PRP file.
 
 8. **Create PullRequest**
 
-   - Please make commits at an appropriate granularity with git.
+   - Please make commits at an appropriate granularity with git(separate commit if needed).
    - Please create the Pull Request based on the template below(use MCP Tool).
    - Think in English, but write in Japanese.
 
@@ -69,6 +71,6 @@ Note: If validation fails, use error patterns in PRP to fix and retry.
 [Bullet any points that require special attention during review]
 
 ## Issue
-[Put Issue link to close when merged]
+close [Put Issue link to close when merged]
 
 ```

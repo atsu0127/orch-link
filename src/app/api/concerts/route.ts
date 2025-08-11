@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { 
-  getAllConcertsFromDB, 
-  getActiveConcertsFromDB, 
-  getConcertDataFromDB 
-} from "@/lib/seed-helpers";
+import { verifyToken } from "@/lib/auth";
+import {
+  getAllConcerts,
+  getActiveConcerts,
+  getConcertData,
+} from "@/lib/queries";
 
 /**
  * GET /api/concerts
@@ -15,10 +15,7 @@ export async function GET(request: NextRequest) {
     // JWT認証チェック
     const token = request.cookies.get("auth-token")?.value;
     if (!token) {
-      return NextResponse.json(
-        { error: "認証が必要です" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
     }
 
     const payload = await verifyToken(token);
@@ -31,19 +28,19 @@ export async function GET(request: NextRequest) {
 
     // クエリパラメータの処理
     const { searchParams } = new URL(request.url);
-    const activeOnly = searchParams.get('active') === 'true';
-    const concertId = searchParams.get('id');
+    const activeOnly = searchParams.get("active") === "true";
+    const concertId = searchParams.get("id");
 
     // 特定の演奏会詳細を取得
     if (concertId) {
-      const concertData = await getConcertDataFromDB(concertId);
+      const concertData = await getConcertData(concertId);
       if (!concertData) {
         return NextResponse.json(
           { error: "演奏会が見つかりません" },
           { status: 404 }
         );
       }
-      
+
       return NextResponse.json({
         success: true,
         data: concertData,
@@ -51,13 +48,14 @@ export async function GET(request: NextRequest) {
     }
 
     // 演奏会一覧を取得
-    const concerts = activeOnly ? await getActiveConcertsFromDB() : await getAllConcertsFromDB();
+    const concerts = activeOnly
+      ? await getActiveConcerts()
+      : await getAllConcerts();
 
     return NextResponse.json({
       success: true,
       data: concerts,
     });
-
   } catch (error) {
     console.error("Concert API error:", error);
     return NextResponse.json(

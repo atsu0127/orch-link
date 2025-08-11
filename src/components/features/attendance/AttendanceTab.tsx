@@ -1,19 +1,23 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { 
-  Paper, 
-  Title, 
-  Text, 
-  Button, 
+import React from "react";
+import {
+  Paper,
+  Title,
+  Text,
+  Button,
   Stack,
   Alert,
   Group,
-  Badge
-} from '@mantine/core';
-import { IconExternalLink, IconInfoCircle, IconClipboardList } from '@tabler/icons-react';
-import { AttendanceForm } from '@/types';
-import { formatDate } from '@/lib/mock-data';
+  Badge,
+} from "@mantine/core";
+import {
+  IconExternalLink,
+  IconInfoCircle,
+  IconClipboardList,
+} from "@tabler/icons-react";
+import { formatDate } from "@/lib/utils";
+import { AttendanceForm } from "@/types";
 
 interface AttendanceTabProps {
   concertId: string;
@@ -44,7 +48,9 @@ export function AttendanceTab({ attendanceForms }: AttendanceTabProps) {
     <Stack gap="lg">
       {/* ヘッダー情報 */}
       <div>
-        <Title order={3} className="mb-2">出欠調整</Title>
+        <Title order={3} className="mb-2">
+          出欠調整
+        </Title>
         <Text size="sm" className="text-gray-600">
           演奏会への参加可否をお知らせください
         </Text>
@@ -68,7 +74,11 @@ export function AttendanceTab({ attendanceForms }: AttendanceTabProps) {
 
             {/* 説明文 */}
             {form.description && (
-              <Alert icon={<IconInfoCircle size="1rem" />} color="blue" variant="light">
+              <Alert
+                icon={<IconInfoCircle size="1rem" />}
+                color="blue"
+                variant="light"
+              >
                 {form.description}
               </Alert>
             )}
@@ -77,7 +87,7 @@ export function AttendanceTab({ attendanceForms }: AttendanceTabProps) {
             <Group>
               <Button
                 leftSection={<IconExternalLink size="1rem" />}
-                onClick={() => window.open(form.url, '_blank')}
+                onClick={() => window.open(form.url, "_blank")}
                 size="md"
                 className="w-full sm:w-auto"
               >
@@ -96,10 +106,13 @@ export function AttendanceTab({ attendanceForms }: AttendanceTabProps) {
       {/* 補足情報 */}
       <Alert color="gray" variant="light" className="mt-4">
         <Text size="sm">
-          <strong>注意事項：</strong><br />
-          • 出欠調整は外部サービスで管理されています<br />
-          • フォーム送信後、確認メールが届かない場合は管理者にお問い合わせください<br />
-          • 参加予定の変更がある場合は、お早めにご連絡ください
+          <strong>注意事項：</strong>
+          <br />
+          • 出欠調整は外部サービスで管理されています
+          <br />
+          •
+          フォーム送信後、確認メールが届かない場合は管理者にお問い合わせください
+          <br />• 参加予定の変更がある場合は、お早めにご連絡ください
         </Text>
       </Alert>
     </Stack>

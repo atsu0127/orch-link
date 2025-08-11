@@ -1,39 +1,32 @@
 ## FEATURE:
-Enhance practice schedule tab with separate start/end times, address field, and video recording support. Currently, practice schedules only store a single date/time, venue name without address, and audio recording only. This enhancement will add:
 
-1. Separate startTime and endTime fields instead of single date field
-2. Optional address field for practice venues (free text)
-3. videoUrl field in addition to existing audioUrl field
-
-The implementation requires database schema changes, TypeScript interface updates, API route modifications, and frontend component enhancements to display the new time format and additional information fields.
+Refactor data fetching flow from mock-data to database-based API calls with proper type safety. Currently, the frontend directly uses mock-data functions while API routes already use database functions. Need to consolidate utility functions and ensure proper DateTime/Date type conversions between Prisma, API, and frontend.
 
 ## EXAMPLES:
-No specific examples folder available, but existing practice-related files provide patterns:
-- `src/components/features/practices/PracticesList.tsx` - List view component
-- `src/components/features/practices/PracticeDetail.tsx` - Detail view component
-- `src/types/index.ts` - Practice interface definition
-- `src/app/api/practices/route.ts` - API endpoints for CRUD operations
+
+Key files to examine:
+
+- `src/app/page.tsx` - Currently uses `getConcertData()` and `getActiveConcerts()` from mock-data
+- `src/app/api/concerts/route.ts` - Already implemented with DB functions
+- `src/lib/seed-helpers.ts` - Contains DB query functions that should be moved to more general location
+- `src/lib/mock-data.ts` - Contains duplicate utility functions and mock data that should be seed-only
+- Multiple components import format functions from mock-data
 
 ## DOCUMENTATION:
-- Project documentation in `docs/` folder:
-  - `docs/requirements.md` - Feature requirements specification
-  - `docs/architecture.md` - System architecture and GCP services
-  - `docs/screen_design.md` - UI/UX specifications
-  - `docs/plan.md` - Development roadmap
-- Prisma documentation: https://www.prisma.io/docs/
-- Next.js App Router documentation: https://nextjs.org/docs/app
-- Mantine UI components: https://mantine.dev/
+
+- Next.js API Routes: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
+- Prisma Client: https://www.prisma.io/docs/concepts/components/prisma-client
+- TypeScript Date handling: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
 
 ## OTHER CONSIDERATIONS:
-- **Database Migration**: Existing data with single `date` field needs migration strategy. Suggest treating existing `date` as `startTime` and leaving `endTime` as null for backward compatibility
-- **API Backward Compatibility**: Consider maintaining support for existing API calls while adding new fields
-- **Time Zone Handling**: Ensure consistent time zone handling between start and end times
-- **Validation**: Add proper validation to ensure endTime is after startTime
-- **UI/UX**: Time display format should be user-friendly (e.g., "10:00 - 12:00" instead of full ISO strings)
-- **Mobile Responsiveness**: Ensure new fields display properly on mobile devices (primary use case)
-- **Empty State Handling**: Gracefully handle cases where endTime, address, or videoUrl are not provided
-- **Video Link Validation**: Consider adding URL validation for video links similar to existing audio functionality
-- **Japanese Localization**: All UI text should be in Japanese as per project requirements
+
+- Prisma DateTime fields become strings when serialized through JSON APIs - need proper type conversion
+- Duplicate format functions exist in both mock-data.ts and seed-helpers.ts
+- Components currently import format utilities from mock-data, which should be moved to dedicated utility location
+- Existing API routes use proper DB functions but frontend hasn't been updated to use them
+- Need to preserve seed data functionality while removing direct mock-data usage in components
+- Type definitions have inconsistencies between Date, DateTime, and string types across different layers
 
 ## ISSUE LINK:
-https://github.com/atsu0127/orch-link/issues/5
+
+https://github.com/atsu0127/orch-link/issues/9

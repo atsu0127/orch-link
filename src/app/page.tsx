@@ -11,8 +11,13 @@ import { AttendanceTab } from "@/components/features/attendance/AttendanceTab";
 import { ScoresTab } from "@/components/features/scores/ScoresTab";
 import { PracticesList } from "@/components/features/practices/PracticesList";
 import { ContactTab } from "@/components/features/contact/ContactTab";
-import { getConcertData, getActiveConcerts } from "@/lib/mock-data";
-import { TabType, Concert, AttendanceForm, Score, Practice } from "@/types";
+import {
+  fetchConcerts,
+  fetchConcertData,
+  handleApiError,
+} from "@/lib/api-client";
+import { Concert, ConcertDetail, TabType } from "@/types";
+import { ConcertAPI } from "@/types/serialized";
 
 /**
  * メインアプリケーションページ
@@ -26,12 +31,8 @@ function MainApp() {
     null
   );
   const [activeTab, setActiveTab] = useState<TabType>("attendance");
-  const [concertData, setConcertData] = useState<{
-    concert: Concert;
-    attendanceForms: AttendanceForm[];
-    scores: Score[];
-    practices: Practice[];
-  } | null>(null);
+  const [concerts, setConcerts] = useState<Concert[]>([]);
+  const [concertData, setConcertData] = useState<ConcertDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // 初期化時の処理
@@ -60,15 +61,18 @@ function MainApp() {
    * アプリケーション初期化
    * 最後に選択された演奏会・タブを復元
    */
-  const initializeApp = () => {
+  const initializeApp = async () => {
     try {
       // アクティブな演奏会を取得
-      const activeConcerts = getActiveConcerts();
+      const activeConcerts = await fetchConcerts(true); // activeOnly = true
 
       if (activeConcerts.length === 0) {
         setError("アクティブな演奏会がありません");
         return;
       }
+
+      // 状態に保存
+      setConcerts(activeConcerts);
 
       // 最後に選択された演奏会を復元、なければ最初の演奏会を選択
       const lastConcertId = localStorage.getItem("lastSelectedConcert");
@@ -89,16 +93,19 @@ function MainApp() {
       }
     } catch (error) {
       console.error("アプリケーション初期化エラー:", error);
-      setError("アプリケーションの初期化に失敗しました");
+      setError(
+        `アプリケーションの初期化に失敗しました: ${handleApiError(error)}`
+      );
     }
   };
 
   /**
    * 演奏会データの読み込み
    */
-  const loadConcertData = (concertId: string) => {
+  const loadConcertData = async (concertId: string) => {
     try {
-      const data = getConcertData(concertId);
+      const data = await fetchConcertData(concertId);
+      console.log(data);
       if (!data) {
         setError("演奏会データが見つかりません");
         return;
@@ -107,7 +114,9 @@ function MainApp() {
       setError(null);
     } catch (error) {
       console.error("演奏会データ読み込みエラー:", error);
-      setError("演奏会データの読み込みに失敗しました");
+      setError(
+        `演奏会データの読み込みに失敗しました: ${handleApiError(error)}`
+      );
     }
   };
 
@@ -164,6 +173,7 @@ function MainApp() {
       <Header
         selectedConcertId={selectedConcertId}
         onConcertChange={handleConcertChange}
+        concerts={concerts}
       />
 
       {/* メインコンテンツ */}
