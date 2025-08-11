@@ -8,6 +8,8 @@ The AI agent only gets the context you are appending to the PRP and training dat
 
 ## Research Process
 
+**USE SERENA MCP if you want to check codebase**
+
 1. **Codebase Analysis**
 
    - Search for similar features/patterns in the codebase

@@ -1,17 +1,20 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { 
-  Paper, 
-  Title, 
-  Text, 
-  Button, 
+import React, { useState, useEffect } from "react";
+import {
+  Paper,
+  Title,
+  Text,
+  Button,
   Stack,
   Alert,
-  Group
-} from '@mantine/core';
-import { IconMail, IconInfoCircle } from '@tabler/icons-react';
-import { formatDate, mockContactInfo } from '@/lib/mock-data';
+  Group,
+  LoadingOverlay,
+} from "@mantine/core";
+import { IconMail, IconInfoCircle } from "@tabler/icons-react";
+import { formatDate } from "@/lib/utils";
+import { fetchContactInfo, handleApiError } from "@/lib/api-client";
+import { ContactInfo } from "@/types";
 
 interface ContactTabProps {
   concertId: string;
@@ -22,9 +25,50 @@ interface ContactTabProps {
  * 管理者への連絡手段（メール）を提供
  */
 export function ContactTab({}: ContactTabProps) {
-  // モックデータから連絡先情報を取得
-  const contactInfo = mockContactInfo[0];
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // コンポーネントマウント時に連絡先情報を取得
+  useEffect(() => {
+    const loadContactInfo = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchContactInfo();
+        setContactInfo(data);
+        setError(null);
+      } catch (err) {
+        console.error("連絡先情報取得エラー:", err);
+        setError(handleApiError(err));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadContactInfo();
+  }, []);
+
+  // ローディング中
+  if (isLoading) {
+    return (
+      <div className="relative min-h-[400px]">
+        <LoadingOverlay visible />
+      </div>
+    );
+  }
+
+  // エラー時
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <Alert color="red" className="max-w-md mx-auto">
+          <Text size="sm">連絡先情報の取得に失敗しました: {error}</Text>
+        </Alert>
+      </div>
+    );
+  }
+
+  // 連絡先情報が存在しない場合
   if (!contactInfo) {
     return (
       <div className="text-center py-12">
@@ -44,7 +88,9 @@ export function ContactTab({}: ContactTabProps) {
    * mailtoリンクでメーラーを起動
    */
   const handleSendEmail = () => {
-    const subject = encodeURIComponent('Orch Link エキストラからのお問い合わせ');
+    const subject = encodeURIComponent(
+      "Orch Link エキストラからのお問い合わせ"
+    );
     const body = encodeURIComponent(`
 演奏会についてお問い合わせがあります。
 
@@ -52,13 +98,13 @@ export function ContactTab({}: ContactTabProps) {
 （こちらに内容をご記入ください）
 
 【連絡先】
-お名前: 
-メールアドレス: 
-電話番号（任意）: 
+お名前:
+メールアドレス:
+電話番号（任意）:
 
 よろしくお願いいたします。
     `);
-    
+
     const mailtoUrl = `mailto:${contactInfo.email}?subject=${subject}&body=${body}`;
     window.location.href = mailtoUrl;
   };
@@ -67,7 +113,9 @@ export function ContactTab({}: ContactTabProps) {
     <Stack gap="lg">
       {/* ヘッダー情報 */}
       <div>
-        <Title order={3} className="mb-2">管理者への連絡</Title>
+        <Title order={3} className="mb-2">
+          管理者への連絡
+        </Title>
         <Text size="sm" className="text-gray-600">
           演奏会に関するお問い合わせやご質問はこちら
         </Text>
@@ -78,7 +126,9 @@ export function ContactTab({}: ContactTabProps) {
         <Stack gap="lg">
           {/* 説明文 */}
           <div>
-            <Title order={4} className="mb-3">お問い合わせについて</Title>
+            <Title order={4} className="mb-3">
+              お問い合わせについて
+            </Title>
             <Text size="sm" className="leading-relaxed">
               {contactInfo.description}
             </Text>
@@ -116,39 +166,57 @@ export function ContactTab({}: ContactTabProps) {
 
       {/* お問い合わせガイド */}
       <Alert icon={<IconInfoCircle size="1rem" />} color="blue" variant="light">
-        <Title order={6} className="mb-2">お問い合わせの際のお願い</Title>
+        <Title order={6} className="mb-2">
+          お問い合わせの際のお願い
+        </Title>
         <Text size="sm">
-          <strong>以下の情報をお知らせいただけると、より迅速に対応できます：</strong><br />
-          • お名前（匿名でも結構です）<br />
-          • 参加予定の演奏会名<br />
-          • お問い合わせの種類（楽譜、スケジュール、その他）<br />
-          • 具体的なご質問内容<br />
-          • 返信をご希望の場合は連絡先
+          <strong>
+            以下の情報をお知らせいただけると、より迅速に対応できます：
+          </strong>
+          <br />
+          • お名前（匿名でも結構です）
+          <br />
+          • 参加予定の演奏会名
+          <br />
+          • お問い合わせの種類（楽譜、スケジュール、その他）
+          <br />
+          • 具体的なご質問内容
+          <br />• 返信をご希望の場合は連絡先
         </Text>
       </Alert>
 
       {/* よくある質問 */}
       <Paper p="lg" className="border border-gray-200">
-        <Title order={5} className="mb-3">よくあるお問い合わせ</Title>
+        <Title order={5} className="mb-3">
+          よくあるお問い合わせ
+        </Title>
         <Stack gap="sm">
           <div>
-            <Text size="sm" className="font-semibold mb-1">Q. 楽譜のリンクが開けません</Text>
+            <Text size="sm" className="font-semibold mb-1">
+              Q. 楽譜のリンクが開けません
+            </Text>
             <Text size="sm" className="text-gray-600 ml-4">
-              A. リンク切れは自動で管理者に通知されます。しばらくお待ちいただくか、直接ご連絡ください。
+              A.
+              リンク切れは自動で管理者に通知されます。しばらくお待ちいただくか、直接ご連絡ください。
             </Text>
           </div>
-          
+
           <div>
-            <Text size="sm" className="font-semibold mb-1">Q. 練習の参加可否を変更したい</Text>
+            <Text size="sm" className="font-semibold mb-1">
+              Q. 練習の参加可否を変更したい
+            </Text>
             <Text size="sm" className="text-gray-600 ml-4">
               A. 出欠調整から再度送信するか、メールで直接ご連絡ください。
             </Text>
           </div>
-          
+
           <div>
-            <Text size="sm" className="font-semibold mb-1">Q. 演奏会の詳細情報を知りたい</Text>
+            <Text size="sm" className="font-semibold mb-1">
+              Q. 演奏会の詳細情報を知りたい
+            </Text>
             <Text size="sm" className="text-gray-600 ml-4">
-              A. 具体的な質問内容をメールでお知らせください。詳細をご案内いたします。
+              A.
+              具体的な質問内容をメールでお知らせください。詳細をご案内いたします。
             </Text>
           </div>
         </Stack>

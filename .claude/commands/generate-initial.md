@@ -2,6 +2,8 @@
 
 ## Basic Instructions
 
+**USE SERENA MCP if you want to check codebase**
+
 Follow the steps below to create the issue and INITIAL.md:
 
 1. Infer the type and task content based on the user's input defined below.

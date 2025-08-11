@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { 
-  Paper, 
-  Title, 
-  Text, 
-  Button, 
+import React from "react";
+import {
+  Paper,
+  Title,
+  Text,
+  Button,
   Stack,
   Alert,
   Group,
   Badge,
   Accordion,
-  Tooltip
-} from '@mantine/core';
-import { 
-  IconMusic, 
-  IconExternalLink, 
+  Tooltip,
+} from "@mantine/core";
+import {
+  IconMusic,
+  IconExternalLink,
   IconAlertTriangle,
   IconCheck,
-  IconClock
-} from '@tabler/icons-react';
-import { Score } from '@/types';
-import { formatDate } from '@/lib/mock-data';
+  IconClock,
+} from "@tabler/icons-react";
+import { Score } from "@/types";
+import { formatDate } from "@/lib/utils";
 
 interface ScoresTabProps {
   concertId: string;
@@ -52,7 +52,9 @@ export function ScoresTab({ scores }: ScoresTabProps) {
     <Stack gap="lg">
       {/* ヘッダー情報 */}
       <div>
-        <Title order={3} className="mb-2">楽譜リンク</Title>
+        <Title order={3} className="mb-2">
+          楽譜リンク
+        </Title>
         <Text size="sm" className="text-gray-600">
           演奏会で使用する楽譜をダウンロードできます
         </Text>
@@ -66,20 +68,28 @@ export function ScoresTab({ scores }: ScoresTabProps) {
             <Group justify="space-between" align="flex-start">
               <div className="flex-1">
                 <Group gap="sm" className="mb-2">
-                  <Title order={4}>
-                    {score.title}
-                  </Title>
-                  
+                  <Title order={4}>{score.title}</Title>
+
                   {/* リンク有効性表示 */}
                   {score.isValid ? (
                     <Tooltip label="リンクは正常です">
-                      <Badge color="green" variant="light" size="sm" leftSection={<IconCheck size="0.8rem" />}>
+                      <Badge
+                        color="green"
+                        variant="light"
+                        size="sm"
+                        leftSection={<IconCheck size="0.8rem" />}
+                      >
                         有効
                       </Badge>
                     </Tooltip>
                   ) : (
                     <Tooltip label="リンクに問題があります">
-                      <Badge color="red" variant="light" size="sm" leftSection={<IconAlertTriangle size="0.8rem" />}>
+                      <Badge
+                        color="red"
+                        variant="light"
+                        size="sm"
+                        leftSection={<IconAlertTriangle size="0.8rem" />}
+                      >
                         要確認
                       </Badge>
                     </Tooltip>
@@ -90,9 +100,14 @@ export function ScoresTab({ scores }: ScoresTabProps) {
 
             {/* リンク切れ警告 */}
             {!score.isValid && (
-              <Alert icon={<IconAlertTriangle size="1rem" />} color="red" variant="light">
+              <Alert
+                icon={<IconAlertTriangle size="1rem" />}
+                color="red"
+                variant="light"
+              >
                 <Text size="sm">
-                  <strong>リンクエラー:</strong> 楽譜にアクセスできません。管理者に報告済みです。
+                  <strong>リンクエラー:</strong>{" "}
+                  楽譜にアクセスできません。管理者に報告済みです。
                 </Text>
               </Alert>
             )}
@@ -101,7 +116,7 @@ export function ScoresTab({ scores }: ScoresTabProps) {
             <Group>
               <Button
                 leftSection={<IconExternalLink size="1rem" />}
-                onClick={() => window.open(score.url, '_blank')}
+                onClick={() => window.open(score.url, "_blank")}
                 disabled={!score.isValid}
                 size="md"
                 className="w-full sm:w-auto"
@@ -121,9 +136,15 @@ export function ScoresTab({ scores }: ScoresTabProps) {
                   <Accordion.Panel>
                     <Stack gap="xs">
                       {score.comments
-                        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+                        .sort(
+                          (a, b) =>
+                            b.createdAt.getTime() - a.createdAt.getTime()
+                        )
                         .map((comment) => (
-                          <div key={comment.id} className="p-3 bg-gray-50 rounded-md">
+                          <div
+                            key={comment.id}
+                            className="p-3 bg-gray-50 rounded-md"
+                          >
                             <Text size="sm" className="mb-1">
                               {comment.content}
                             </Text>
@@ -149,11 +170,14 @@ export function ScoresTab({ scores }: ScoresTabProps) {
       {/* 補足情報 */}
       <Alert color="blue" variant="light" className="mt-4">
         <Text size="sm">
-          <strong>楽譜について：</strong><br />
-          • 楽譜はPDF形式で提供されます<br />
-          • ダウンロード後はオフラインでも閲覧可能です<br />
-          • 更新があった楽譜には履歴が記載されます<br />
-          • リンクに問題がある場合、管理者に自動で通知されます
+          <strong>楽譜について：</strong>
+          <br />
+          • 楽譜はPDF形式で提供されます
+          <br />
+          • ダウンロード後はオフラインでも閲覧可能です
+          <br />
+          • 更新があった楽譜には履歴が記載されます
+          <br />• リンクに問題がある場合、管理者に自動で通知されます
         </Text>
       </Alert>
     </Stack>

@@ -1,5 +1,13 @@
 // 基本データ構造型定義
 
+// UIで使うための統合した型定義
+export interface ConcertDetail {
+  concert: Concert;
+  attendanceForms: AttendanceForm[];
+  scores: Score[];
+  practices: Practice[];
+}
+
 // ユーザー型定義
 export interface User {
   id: string;

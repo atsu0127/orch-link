@@ -1,15 +1,19 @@
-// データベースシードスクリプト - モックデータからPrisma操作への変換
+// データベースシードスクリプト - JSONシードデータからPrisma操作への変換
 import { PrismaClient } from "../src/generated/prisma";
-import {
-  mockConcerts,
-  mockAttendanceForms,
-  mockScores,
-  mockScoreComments,
-  mockPractices,
-  mockContactInfo,
-} from "../src/lib/mock-data";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 const prisma = new PrismaClient();
+
+// JSONシードデータを読み込み
+const seedDataPath = join(__dirname, "..", "src", "lib", "seed-data.json");
+const seedDataRaw = readFileSync(seedDataPath, "utf-8");
+const seedData = JSON.parse(seedDataRaw);
+
+// ISO文字列をDateオブジェクトに変換するヘルパー関数
+function parseDate(dateString: string): Date {
+  return new Date(dateString);
+}
 
 async function main() {
   console.log("🌱 データベースシード開始...");
@@ -26,73 +30,73 @@ async function main() {
   // CRITICAL: 依存関係順でデータ作成（親エンティティから子エンティティへ）
   console.log("🎼 演奏会データの作成中...");
   await prisma.concert.createMany({
-    data: mockConcerts.map(concert => ({
+    data: seedData.concerts.map((concert: any) => ({
       id: concert.id,
       title: concert.title,
-      date: concert.date,
+      date: parseDate(concert.date),
       venue: concert.venue,
       isActive: concert.isActive,
-      createdAt: concert.updatedAt, // createdAtにupdatedAtを使用
-      updatedAt: concert.updatedAt,
+      createdAt: parseDate(concert.updatedAt), // createdAtにupdatedAtを使用
+      updatedAt: parseDate(concert.updatedAt),
     })),
   });
 
   console.log("📝 連絡先情報の作成中...");
   await prisma.contactInfo.createMany({
-    data: mockContactInfo.map(contact => ({
+    data: seedData.contactInfo.map((contact: any) => ({
       id: contact.id,
       email: contact.email,
       description: contact.description,
-      createdAt: contact.updatedAt, // createdAtにupdatedAtを使用
-      updatedAt: contact.updatedAt,
+      createdAt: parseDate(contact.updatedAt), // createdAtにupdatedAtを使用
+      updatedAt: parseDate(contact.updatedAt),
     })),
   });
 
   console.log("📋 出欠調整の作成中...");
   await prisma.attendanceForm.createMany({
-    data: mockAttendanceForms.map(form => ({
+    data: seedData.attendanceForms.map((form: any) => ({
       id: form.id,
       concertId: form.concertId,
       title: form.title,
       url: form.url,
       description: form.description,
-      createdAt: form.updatedAt, // createdAtにupdatedAtを使用
-      updatedAt: form.updatedAt,
+      createdAt: parseDate(form.updatedAt), // createdAtにupdatedAtを使用
+      updatedAt: parseDate(form.updatedAt),
     })),
   });
 
   console.log("🎵 楽譜データの作成中...");
   // CRITICAL: 楽譜からcommentsフィールドを除外（別テーブルのため）
   await prisma.score.createMany({
-    data: mockScores.map(score => ({
+    data: seedData.scores.map((score: any) => ({
       id: score.id,
       concertId: score.concertId,
       title: score.title,
       url: score.url,
       isValid: score.isValid,
-      createdAt: score.updatedAt, // createdAtにupdatedAtを使用
-      updatedAt: score.updatedAt,
+      createdAt: parseDate(score.updatedAt), // createdAtにupdatedAtを使用
+      updatedAt: parseDate(score.updatedAt),
     })),
   });
 
   console.log("💬 楽譜コメントの作成中...");
   await prisma.scoreComment.createMany({
-    data: mockScoreComments.map(comment => ({
+    data: seedData.scoreComments.map((comment: any) => ({
       id: comment.id,
       scoreId: comment.scoreId,
       content: comment.content,
-      createdAt: comment.createdAt,
+      createdAt: parseDate(comment.createdAt),
     })),
   });
 
   console.log("🎪 練習予定の作成中...");
   await prisma.practice.createMany({
-    data: mockPractices.map(practice => ({
+    data: seedData.practices.map((practice: any) => ({
       id: practice.id,
       concertId: practice.concertId,
       title: practice.title,
-      startTime: practice.startTime,
-      endTime: practice.endTime,
+      startTime: parseDate(practice.startTime),
+      endTime: practice.endTime ? parseDate(practice.endTime) : null,
       venue: practice.venue,
       address: practice.address,
       items: practice.items,
@@ -100,8 +104,8 @@ async function main() {
       memo: practice.memo,
       audioUrl: practice.audioUrl,
       videoUrl: practice.videoUrl,
-      createdAt: practice.updatedAt, // createdAtにupdatedAtを使用
-      updatedAt: practice.updatedAt,
+      createdAt: parseDate(practice.updatedAt), // createdAtにupdatedAtを使用
+      updatedAt: parseDate(practice.updatedAt),
     })),
   });
 

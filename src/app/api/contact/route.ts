@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { getContactInfoFromDB } from "@/lib/seed-helpers";
+import { getContactInfo } from "@/lib/queries";
 import { prisma } from "@/lib/db";
 
 /**
@@ -26,9 +26,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 連絡先情報を取得（最初のアイテムを使用）
-    const contactInfoList = await getContactInfoFromDB();
-    const contactInfo = contactInfoList[0];
+    // 連絡先情報を取得
+    const contactInfo = await getContactInfo();
 
     if (!contactInfo) {
       return NextResponse.json(
@@ -96,7 +95,7 @@ export async function PUT(request: NextRequest) {
 
     // 既存の連絡先情報を取得し、存在しない場合は作成
     const existingContactInfo = await prisma.contactInfo.findFirst();
-    
+
     if (existingContactInfo) {
       // 更新
       await prisma.contactInfo.update({
@@ -115,7 +114,7 @@ export async function PUT(request: NextRequest) {
         },
       });
     }
-    
+
     console.log("連絡先情報更新完了:", {
       email,
       updatedBy: payload.userId,

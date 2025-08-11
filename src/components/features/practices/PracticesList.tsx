@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { 
-  Paper, 
-  Title, 
-  Text, 
-  Button, 
+import React, { useState } from "react";
+import {
+  Paper,
+  Title,
+  Text,
+  Button,
   Stack,
   Group,
   Badge,
-  Divider
-} from '@mantine/core';
-import { 
-  IconCalendar, 
-  IconMapPin, 
+  Divider,
+} from "@mantine/core";
+import {
+  IconCalendar,
+  IconMapPin,
   IconChevronRight,
-  IconClock
-} from '@tabler/icons-react';
-import { Practice } from '@/types';
-import { formatDate, formatTimeRange } from '@/lib/mock-data';
-import { PracticeDetail } from './PracticeDetail';
+  IconClock,
+} from "@tabler/icons-react";
+import { Practice } from "@/types";
+import { formatDate, formatTimeRange } from "@/lib/utils";
+import { PracticeDetail } from "./PracticeDetail";
 
 interface PracticesListProps {
   concertId: string;
@@ -31,14 +31,16 @@ interface PracticesListProps {
  * 練習の一覧表示と詳細ビューへの切り替えを管理
  */
 export function PracticesList({ practices }: PracticesListProps) {
-  const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null);
+  const [selectedPractice, setSelectedPractice] = useState<Practice | null>(
+    null
+  );
 
   // 詳細表示モードの場合
   if (selectedPractice) {
     return (
-      <PracticeDetail 
-        practice={selectedPractice} 
-        onBack={() => setSelectedPractice(null)} 
+      <PracticeDetail
+        practice={selectedPractice}
+        onBack={() => setSelectedPractice(null)}
       />
     );
   }
@@ -60,14 +62,16 @@ export function PracticesList({ practices }: PracticesListProps) {
 
   // 現在時刻で過去・未来の練習を分ける
   const now = new Date();
-  const upcomingPractices = practices.filter(p => p.startTime > now);
-  const pastPractices = practices.filter(p => p.startTime <= now);
+  const upcomingPractices = practices.filter((p) => p.startTime > now);
+  const pastPractices = practices.filter((p) => p.startTime <= now);
 
   return (
     <Stack gap="lg">
       {/* ヘッダー情報 */}
       <div>
-        <Title order={3} className="mb-2">練習予定</Title>
+        <Title order={3} className="mb-2">
+          練習予定
+        </Title>
         <Text size="sm" className="text-gray-600">
           リハーサルスケジュールと詳細情報
         </Text>
@@ -81,7 +85,7 @@ export function PracticesList({ practices }: PracticesListProps) {
           </Title>
           <Stack gap="md">
             {upcomingPractices.map((practice) => (
-              <PracticeCard 
+              <PracticeCard
                 key={practice.id}
                 practice={practice}
                 onSelect={() => setSelectedPractice(practice)}
@@ -93,9 +97,7 @@ export function PracticesList({ practices }: PracticesListProps) {
       )}
 
       {/* 区切り線 */}
-      {upcomingPractices.length > 0 && pastPractices.length > 0 && (
-        <Divider />
-      )}
+      {upcomingPractices.length > 0 && pastPractices.length > 0 && <Divider />}
 
       {/* 過去の練習 */}
       {pastPractices.length > 0 && (
@@ -105,7 +107,7 @@ export function PracticesList({ practices }: PracticesListProps) {
           </Title>
           <Stack gap="md">
             {pastPractices.map((practice) => (
-              <PracticeCard 
+              <PracticeCard
                 key={practice.id}
                 practice={practice}
                 onSelect={() => setSelectedPractice(practice)}
@@ -130,12 +132,12 @@ interface PracticeCardProps {
 
 function PracticeCard({ practice, onSelect, isPast }: PracticeCardProps) {
   return (
-    <Paper 
-      shadow="sm" 
-      p="md" 
-      radius="md" 
+    <Paper
+      shadow="sm"
+      p="md"
+      radius="md"
       className={`border cursor-pointer hover:shadow-md transition-shadow ${
-        isPast ? 'opacity-75' : ''
+        isPast ? "opacity-75" : ""
       }`}
       onClick={onSelect}
     >
@@ -143,7 +145,10 @@ function PracticeCard({ practice, onSelect, isPast }: PracticeCardProps) {
         <div className="flex-1">
           {/* タイトルと日時 */}
           <Group gap="sm" className="mb-2">
-            <Title order={5} className={isPast ? 'text-gray-600' : 'text-gray-900'}>
+            <Title
+              order={5}
+              className={isPast ? "text-gray-600" : "text-gray-900"}
+            >
               {practice.title}
             </Title>
             {isPast && (
@@ -158,13 +163,14 @@ function PracticeCard({ practice, onSelect, isPast }: PracticeCardProps) {
             <Group gap="sm">
               <IconClock size="1rem" className="text-gray-500" />
               <Text size="sm" className="text-gray-700">
-                {practice.endTime 
-                  ? `${formatDate(practice.startTime).split(' ')[0]} ${formatTimeRange(practice.startTime, practice.endTime)}`
-                  : formatDate(practice.startTime)
-                }
+                {practice.endTime
+                  ? `${
+                      formatDate(practice.startTime).split(" ")[0]
+                    } ${formatTimeRange(practice.startTime, practice.endTime)}`
+                  : formatDate(practice.startTime)}
               </Text>
             </Group>
-            
+
             <Group gap="sm">
               <IconMapPin size="1rem" className="text-gray-500" />
               <Text size="sm" className="text-gray-700">
@@ -175,8 +181,8 @@ function PracticeCard({ practice, onSelect, isPast }: PracticeCardProps) {
         </div>
 
         {/* 詳細表示ボタン */}
-        <Button 
-          variant="light" 
+        <Button
+          variant="light"
           size="xs"
           rightSection={<IconChevronRight size="0.8rem" />}
         >
