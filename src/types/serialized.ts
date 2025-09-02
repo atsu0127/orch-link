@@ -61,4 +61,5 @@ export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
 // API呼び出しの具体的なレスポンス型
 export type ConcertsListResponse = ApiResponse<ConcertAPI[]>;
 export type ConcertDetailResponse = ApiResponse<ConcertDetailAPI>;
+export type AttendanceFormsListResponse = ApiResponse<AttendanceFormAPI[]>;
 export type ContactInfoResponse = ApiResponse<ContactInfoAPI>;

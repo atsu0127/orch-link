@@ -36,6 +36,13 @@ export interface AttendanceForm {
   updatedAt: Date; // 最終更新日時
 }
 
+// 出欠調整フォームデータ型定義
+export interface AttendanceFormData {
+  title: string; // フォームタイトル
+  url: string; // 外部フォームURL
+  description?: string; // 補足説明（任意）
+}
+
 // 楽譜型定義
 export interface Score {
   id: string;
