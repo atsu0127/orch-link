@@ -23,10 +23,19 @@
       "mcp__serena__insert_after_symbol",
       "mcp__serena__insert_before_symbol",
       "mcp__serena__replace_symbol_body",
-      "mcp__serena__replace_regex"
+      "mcp__serena__replace_regex",
+      "Bash(git checkout:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "mcp__github__create_pull_request"
     ],
     "deny": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["serena"]
+  "enabledMcpjsonServers": [
+    "serena"
+  ]
 }

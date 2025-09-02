@@ -116,10 +116,9 @@ Note: This project appears to be in early planning stages. Build and development
 
 Expected commands for future development:
 
-- `npm run dev` - Start development server
-- `npm run build` - Production build
-- `npm run test` - Run tests
-- `npm run lint` - Code linting
+- `yarn dev` - Start development server
+- `yarn build` - Production build
+- `yarn lint` - Code linting
 
 ## Infrastructure Notes
 
