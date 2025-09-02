@@ -11,13 +11,13 @@ import { AttendanceTab } from "@/components/features/attendance/AttendanceTab";
 import { ScoresTab } from "@/components/features/scores/ScoresTab";
 import { PracticesList } from "@/components/features/practices/PracticesList";
 import { ContactTab } from "@/components/features/contact/ContactTab";
+import { ConcertManagement } from "@/components/features/concerts/ConcertManagement";
 import {
   fetchConcerts,
   fetchConcertData,
   handleApiError,
 } from "@/lib/api-client";
 import { Concert, ConcertDetail, TabType } from "@/types";
-import { ConcertAPI } from "@/types/serialized";
 
 /**
  * メインアプリケーションページ
@@ -87,7 +87,7 @@ function MainApp() {
       const lastTab = localStorage.getItem("lastActiveTab") as TabType;
       if (
         lastTab &&
-        ["attendance", "scores", "practices", "contact"].includes(lastTab)
+        ["attendance", "scores", "practices", "contact", "concerts"].includes(lastTab)
       ) {
         setActiveTab(lastTab);
       }
@@ -178,6 +178,12 @@ function MainApp() {
 
       {/* メインコンテンツ */}
       <Navigation activeTab={activeTab} onTabChange={handleTabChange}>
+        {/* 演奏会管理は常に利用可能（管理者のみ） */}
+        {activeTab === "concerts" && (
+          <ConcertManagement />
+        )}
+
+        {/* 他のタブは選択された演奏会のデータが必要 */}
         {selectedConcertId && concertData && (
           <>
             {activeTab === "attendance" && (

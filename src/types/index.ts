@@ -81,7 +81,7 @@ export interface ContactInfo {
 }
 
 // タブ種類型定義
-export type TabType = "attendance" | "scores" | "practices" | "contact";
+export type TabType = "attendance" | "scores" | "practices" | "contact" | "concerts";
 
 // API レスポンス共通型
 export interface ApiResponse<T> {

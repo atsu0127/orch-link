@@ -6,9 +6,11 @@ import {
   IconClipboardList, 
   IconMusic, 
   IconCalendar, 
-  IconMail 
+  IconMail,
+  IconSettings
 } from '@tabler/icons-react';
 import { TabType } from '@/types';
+import { useAuth } from '@/components/features/auth/AuthProvider';
 
 interface NavigationProps {
   activeTab: TabType;
@@ -18,9 +20,11 @@ interface NavigationProps {
 
 /**
  * タブナビゲーションコンポーネント
- * 4つのメイン機能（出欠・楽譜・練習予定・連絡）のタブ切り替えを提供
+ * 4つのメイン機能（出欠・楽譜・練習予定・連絡）+ 管理者専用（演奏会管理）のタブ切り替えを提供
  */
 export function Navigation({ activeTab, onTabChange, children }: NavigationProps) {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   return (
     <div className="flex-1 bg-gray-50">
       <Container size="xl" className="py-4">
@@ -68,6 +72,18 @@ export function Navigation({ activeTab, onTabChange, children }: NavigationProps
             >
               連絡
             </Tabs.Tab>
+
+            {/* 演奏会管理タブ（管理者のみ） */}
+            {isAdmin && (
+              <Tabs.Tab
+                value="concerts"
+                leftSection={<IconSettings size="1rem" />}
+                className="flex-1 sm:flex-none"
+              >
+                <span className="hidden sm:inline">演奏会管理</span>
+                <span className="sm:hidden">管理</span>
+              </Tabs.Tab>
+            )}
           </Tabs.List>
 
           {/* タブコンテンツエリア */}
