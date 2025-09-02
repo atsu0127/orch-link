@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { getPracticesByConcertFromDB } from "@/lib/seed-helpers";
+import { getPracticesByConcert } from "@/lib/queries";
 import { prisma } from "@/lib/db";
 
 /**
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 指定された演奏会の練習予定を時系列順で取得
-    const practices = await getPracticesByConcertFromDB(concertId);
+    const practices = await getPracticesByConcert(concertId);
 
     return NextResponse.json({
       success: true,
@@ -242,7 +242,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // データベースの練習予定を更新
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, string | Date | boolean | null> = {};
     if (title !== undefined) updateData.title = title;
     if (startTime !== undefined) updateData.startTime = new Date(startTime);
     if (endTime !== undefined) updateData.endTime = endTime ? new Date(endTime) : null;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { getAttendanceFormsByConcertFromDB } from "@/lib/seed-helpers";
+import { getAttendanceFormsByConcert } from "@/lib/queries";
 import { prisma } from "@/lib/db";
 
 /**
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 指定された演奏会の出欠調整を取得
-    const attendanceForms = await getAttendanceFormsByConcertFromDB(concertId);
+    const attendanceForms = await getAttendanceFormsByConcert(concertId);
 
     return NextResponse.json({
       success: true,

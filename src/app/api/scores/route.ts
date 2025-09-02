@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromCookie, verifyToken } from "@/lib/auth";
-import { getScoresByConcertFromDB } from "@/lib/seed-helpers";
+import { getScoresByConcert } from "@/lib/queries";
 import { prisma } from "@/lib/db";
 
 /**
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 指定された演奏会の楽譜を取得
-    const scores = await getScoresByConcertFromDB(concertId);
+    const scores = await getScoresByConcert(concertId);
 
     return NextResponse.json({
       success: true,
@@ -162,7 +162,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // データベースの楽譜を更新
-    const updateData: any = {};
+    const updateData: Record<string, string | boolean> = {};
     if (title !== undefined) updateData.title = title;
     if (url !== undefined) updateData.url = url;
     
