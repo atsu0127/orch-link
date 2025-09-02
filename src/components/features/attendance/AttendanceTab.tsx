@@ -49,16 +49,44 @@ interface AttendanceApiResponse {
  * 出欠調整タブコンポーネント
  * 外部フォーム（Google Forms等）へのリンクを表示
  */
-export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps) {
+export function AttendanceTab({
+  concertId,
+  attendanceForms,
+}: AttendanceTabProps) {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
 
   // 状態管理
-  const [localForms, setLocalForms] = useState<AttendanceForm[]>(attendanceForms);
+  const [localForms, setLocalForms] =
+    useState<AttendanceForm[]>(attendanceForms);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingForm, setEditingForm] = useState<AttendanceForm | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  /**
+   * フォームを閉じる
+   */
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setEditingForm(null);
+  };
+
+  /**
+   * 新規作成モーダルを開く
+   */
+  const handleCreateNew = () => {
+    setEditingForm(null);
+    setIsFormOpen(true);
+  };
+
+  /**
+   * 編集モーダルを開く
+   */
+  const handleEdit = (form: AttendanceForm) => {
+    setEditingForm(form);
+    setIsFormOpen(true);
+  };
 
   /**
    * 出欠調整一覧を再読み込み
@@ -70,14 +98,18 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
       setLocalForms(forms);
     } catch (error) {
       console.error("Attendance forms loading error:", error);
-      setError(`出欠調整一覧の読み込みに失敗しました: ${handleApiError(error)}`);
+      setError(
+        `出欠調整一覧の読み込みに失敗しました: ${handleApiError(error)}`
+      );
     }
   };
 
   /**
    * 出欠調整作成API呼び出し
    */
-  const createAttendanceForm = async (data: AttendanceFormData): Promise<void> => {
+  const createAttendanceForm = async (
+    data: AttendanceFormData
+  ): Promise<void> => {
     const response = await fetch("/api/attendance", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -88,14 +120,19 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
     const result: AttendanceApiResponse = await response.json();
 
     if (!response.ok || !result.success) {
-      throw new Error(result.error || `出欠調整の作成に失敗しました: ${response.status}`);
+      throw new Error(
+        result.error || `出欠調整の作成に失敗しました: ${response.status}`
+      );
     }
   };
 
   /**
    * 出欠調整更新API呼び出し
    */
-  const updateAttendanceForm = async (formId: string, data: AttendanceFormData): Promise<void> => {
+  const updateAttendanceForm = async (
+    formId: string,
+    data: AttendanceFormData
+  ): Promise<void> => {
     const response = await fetch("/api/attendance", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -106,7 +143,9 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
     const result: AttendanceApiResponse = await response.json();
 
     if (!response.ok || !result.success) {
-      throw new Error(result.error || `出欠調整の更新に失敗しました: ${response.status}`);
+      throw new Error(
+        result.error || `出欠調整の更新に失敗しました: ${response.status}`
+      );
     }
   };
 
@@ -122,8 +161,62 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
     const result: AttendanceApiResponse = await response.json();
 
     if (!response.ok || !result.success) {
-      throw new Error(result.error || `出欠調整の削除に失敗しました: ${response.status}`);
+      throw new Error(
+        result.error || `出欠調整の削除に失敗しました: ${response.status}`
+      );
     }
+  };
+
+  /**
+   * 削除実行処理
+   */
+  const performDelete = async (formId: string) => {
+    try {
+      setIsLoading(true);
+      await deleteAttendanceForm(formId);
+
+      notifications.show({
+        title: "削除完了",
+        message: "出欠調整を削除しました",
+        color: "green",
+        icon: <IconCheck size="1rem" />,
+      });
+
+      // 一覧を再読み込み
+      await loadAttendanceForms();
+    } catch (error) {
+      console.error("Delete error:", error);
+      notifications.show({
+        title: "エラー",
+        message: handleApiError(error),
+        color: "red",
+        icon: <IconAlertCircle size="1rem" />,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * 削除確認ダイアログ
+   */
+  const handleDelete = (form: AttendanceForm) => {
+    modals.openConfirmModal({
+      title: "出欠調整を削除",
+      children: (
+        <Stack gap="sm">
+          <Text size="sm">「{form.title}」を削除してもよろしいですか？</Text>
+          <Alert color="yellow" variant="light">
+            <Text size="sm">
+              <strong>注意:</strong> この操作は取り消すことができません。
+            </Text>
+          </Alert>
+        </Stack>
+      ),
+      labels: { confirm: "削除する", cancel: "キャンセル" },
+      confirmProps: { color: "red" },
+      onConfirm: () => performDelete(form.id),
+    });
   };
 
   /**
@@ -156,7 +249,6 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
       // フォームを閉じて一覧を再読み込み
       handleCloseForm();
       await loadAttendanceForms();
-
     } catch (error) {
       console.error("Form submission error:", error);
       notifications.show({
@@ -170,85 +262,6 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
     }
   };
 
-  /**
-   * 新規作成モーダルを開く
-   */
-  const handleCreateNew = () => {
-    setEditingForm(null);
-    setIsFormOpen(true);
-  };
-
-  /**
-   * 編集モーダルを開く
-   */
-  const handleEdit = (form: AttendanceForm) => {
-    setEditingForm(form);
-    setIsFormOpen(true);
-  };
-
-  /**
-   * 削除確認ダイアログ
-   */
-  const handleDelete = (form: AttendanceForm) => {
-    modals.openConfirmModal({
-      title: "出欠調整を削除",
-      children: (
-        <Stack gap="sm">
-          <Text size="sm">
-            「{form.title}」を削除してもよろしいですか？
-          </Text>
-          <Alert color="yellow" variant="light">
-            <Text size="sm">
-              <strong>注意:</strong> この操作は取り消すことができません。
-            </Text>
-          </Alert>
-        </Stack>
-      ),
-      labels: { confirm: "削除する", cancel: "キャンセル" },
-      confirmProps: { color: "red" },
-      onConfirm: () => performDelete(form.id),
-    });
-  };
-
-  /**
-   * 削除実行処理
-   */
-  const performDelete = async (formId: string) => {
-    try {
-      setIsLoading(true);
-      await deleteAttendanceForm(formId);
-      
-      notifications.show({
-        title: "削除完了",
-        message: "出欠調整を削除しました",
-        color: "green",
-        icon: <IconCheck size="1rem" />,
-      });
-      
-      // 一覧を再読み込み
-      await loadAttendanceForms();
-      
-    } catch (error) {
-      console.error("Delete error:", error);
-      notifications.show({
-        title: "エラー",
-        message: handleApiError(error),
-        color: "red",
-        icon: <IconAlertCircle size="1rem" />,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * フォームを閉じる
-   */
-  const handleCloseForm = () => {
-    setIsFormOpen(false);
-    setEditingForm(null);
-  };
-
   // 演奏会に紐づく出欠調整がない場合
   // 演奏会に紐づく出欠調整がない場合
   if (localForms.length === 0) {
@@ -259,7 +272,9 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
           出欠調整はまだ準備されていません
         </Text>
         <Text size="sm" className="text-gray-500">
-          {isAdmin ? "新規作成ボタンから出欠調整を作成してください" : "管理者がフォームを準備次第、こちらに表示されます"}
+          {isAdmin
+            ? "新規作成ボタンから出欠調整を作成してください"
+            : "管理者がフォームを準備次第、こちらに表示されます"}
         </Text>
         {isAdmin && (
           <Button
@@ -271,6 +286,23 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
             新規出欠調整を作成
           </Button>
         )}
+
+        {/* 作成・編集モーダル */}
+        <Modal
+          opened={isFormOpen}
+          onClose={handleCloseForm}
+          title={editingForm ? "出欠調整を編集" : "出欠調整を作成"}
+          centered
+          size="md"
+        >
+          <AttendanceFormComponent
+            initialData={editingForm || undefined}
+            onSubmit={handleFormSubmit}
+            isLoading={isLoading}
+            title={editingForm ? "出欠調整を編集" : "出欠調整を作成"}
+            onCancel={handleCloseForm}
+          />
+        </Modal>
       </div>
     );
   }
@@ -285,7 +317,9 @@ export function AttendanceTab({ concertId, attendanceForms }: AttendanceTabProps
               出欠調整
             </Title>
             <Text size="sm" className="text-gray-600">
-              {isAdmin ? "出欠調整の管理" : "演奏会への参加可否をお知らせください"}
+              {isAdmin
+                ? "出欠調整の管理"
+                : "演奏会への参加可否をお知らせください"}
             </Text>
           </div>
           {isAdmin && localForms.length > 0 && (
