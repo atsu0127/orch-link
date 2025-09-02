@@ -8,11 +8,12 @@
  * @param date - フォーマット対象の日付
  * @returns フォーマットされた日付文字列
  */
-import { Concert, ConcertDetail, ContactInfo } from "@/types";
+import { Concert, ConcertDetail, ContactInfo, AttendanceForm } from "@/types";
 import {
   ConcertAPI,
   ConcertDetailAPI,
   ContactInfoAPI,
+  AttendanceFormAPI,
 } from "@/types/serialized";
 
 export function formatDate(date: Date): string {
@@ -103,6 +104,18 @@ export function deserializeConcertData(data: ConcertAPI[]): Concert[] {
     ...concert,
     date: new Date(concert.date),
     updatedAt: new Date(concert.updatedAt),
+  }));
+}
+
+/**
+ * APIから取得したシリアライズされた出欠調整リストをデシリアライズ
+ * @param data - シリアライズされた出欠調整リスト
+ * @returns デシリアライズされた出欠調整リスト
+ */
+export function deserializeAttendanceFormsData(data: AttendanceFormAPI[]): AttendanceForm[] {
+  return data.map((form) => ({
+    ...form,
+    updatedAt: new Date(form.updatedAt),
   }));
 }
 
