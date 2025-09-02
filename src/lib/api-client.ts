@@ -4,18 +4,18 @@
  */
 
 import {
-  ConcertAPI,
-  ContactInfoAPI,
   ConcertsListResponse,
   ConcertDetailResponse,
+  AttendanceFormsListResponse,
   ContactInfoResponse,
 } from "@/types/serialized";
 import {
   deserializeConcertData,
   deserializeConcertDetailData,
+  deserializeAttendanceFormsData,
   deserializeContactInfoData,
 } from "@/lib/utils";
-import { Concert, ConcertDetail, ContactInfo } from "@/types";
+import { Concert, ConcertDetail, ContactInfo, AttendanceForm } from "@/types";
 
 /**
  * APIエラークラス
@@ -84,6 +84,35 @@ export async function fetchConcertData(
 
   // 日付フィールドをDateオブジェクトに変換
   return deserializeConcertDetailData(data.data);
+}
+
+/**
+ * 出欠調整一覧を取得
+ * @param concertId - 演奏会ID
+ * @returns 出欠調整リスト
+ */
+export async function fetchAttendanceForms(
+  concertId: string
+): Promise<AttendanceForm[]> {
+  const response = await fetch(`/api/attendance?concertId=${concertId}`, {
+    method: "GET",
+    credentials: "include", // JWT認証用クッキー
+  });
+
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      `出欠調整一覧の取得に失敗しました: ${response.status}`
+    );
+  }
+
+  const data: AttendanceFormsListResponse = await response.json();
+
+  if (!data.success) {
+    throw new ApiError(500, data.error || "出欠調整一覧の取得に失敗しました");
+  }
+
+  return deserializeAttendanceFormsData(data.data);
 }
 
 /**
