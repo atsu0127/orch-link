@@ -7,15 +7,17 @@ import {
   ConcertsListResponse,
   ConcertDetailResponse,
   AttendanceFormsListResponse,
+  ScoresListResponse,
   ContactInfoResponse,
 } from "@/types/serialized";
 import {
   deserializeConcertData,
   deserializeConcertDetailData,
   deserializeAttendanceFormsData,
+  deserializeScoresData,
   deserializeContactInfoData,
 } from "@/lib/utils";
-import { Concert, ConcertDetail, ContactInfo, AttendanceForm } from "@/types";
+import { Concert, ConcertDetail, ContactInfo, AttendanceForm, Score } from "@/types";
 
 /**
  * APIエラークラス
@@ -113,6 +115,35 @@ export async function fetchAttendanceForms(
   }
 
   return deserializeAttendanceFormsData(data.data);
+}
+
+/**
+ * 楽譜一覧を取得
+ * @param concertId - 演奏会ID
+ * @returns 楽譜リスト
+ */
+export async function fetchScores(
+  concertId: string
+): Promise<Score[]> {
+  const response = await fetch(`/api/scores?concertId=${concertId}`, {
+    method: "GET",
+    credentials: "include", // JWT認証用クッキー
+  });
+
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      `楽譜一覧の取得に失敗しました: ${response.status}`
+    );
+  }
+
+  const data: ScoresListResponse = await response.json();
+
+  if (!data.success) {
+    throw new ApiError(500, data.error || "楽譜一覧の取得に失敗しました");
+  }
+
+  return deserializeScoresData(data.data);
 }
 
 /**

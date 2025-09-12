@@ -62,6 +62,13 @@ export interface ScoreComment {
   createdAt: Date; // 作成日時
 }
 
+// 楽譜フォームデータ型定義
+export interface ScoreFormData {
+  title: string; // 楽譜タイトル
+  url: string; // 楽譜URL
+  comment?: string; // 更新コメント（任意）
+}
+
 // 練習予定型定義
 export interface Practice {
   id: string;
