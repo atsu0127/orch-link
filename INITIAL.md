@@ -1,24 +1,26 @@
 ## FEATURE:
-Add attendance link management functionality for administrators within the existing attendance tab. Implement create, edit, and delete operations for attendance forms while maintaining read-only display for viewers. The feature should integrate seamlessly into the current AttendanceTab component and follow role-based access control.
+Implement comprehensive score management functionality for administrators including score registration, editing, deletion, and update history management. The feature should provide a modal-based interface for managing sheet music links with full CRUD operations and update history tracking.
 
 ## EXAMPLES:
-- Reference ConcertManagement.tsx for CRUD operation patterns and form handling
-- Reference ConcertForm.tsx for form implementation patterns
-- Reference existing AttendanceTab.tsx for current display logic
+- Existing ScoresTab component in src/components/features/scores/ScoresTab.tsx shows current read-only display
+- Score API endpoints in src/app/api/scores/route.ts demonstrate existing GET, POST, PUT operations
+- Prisma schema models (Score, ScoreComment) in prisma/schema.prisma show the database structure
+- Authentication pattern in existing API routes shows JWT-based admin verification
 
 ## DOCUMENTATION:
-- Prisma schema: AttendanceForm model already exists with required fields (title, url, description)
-- API endpoint: POST /api/attendance already implemented for creation
-- Authentication: JWT role-based access control using verifyToken function
-- UI Components: Mantine library for form components and notifications
+- Mantine UI documentation for Modal, Form, and Table components: https://mantine.dev/
+- Next.js App Router API routes: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
+- Prisma ORM documentation: https://www.prisma.io/docs/
 
 ## OTHER CONSIDERATIONS:
-- Must preserve existing read-only functionality for viewers
-- Add role-based UI rendering (admin vs viewer)
-- Implement PUT and DELETE API endpoints for attendance forms
-- Ensure proper error handling and loading states
-- Follow mobile-first responsive design principles
-- Maintain consistency with existing concert management patterns
+- Must implement missing DELETE API for scores and score comments
+- Modal should be mobile-responsive (primary use case)
+- Strict admin-only access control (JWT role verification)
+- Proper error handling and validation
+- Integration with existing ScoresTab component without breaking current functionality
+- Update history should show chronological changes with ability to edit/delete comments
+- URL validation for score links
+- Proper TypeScript types for all components and API responses
 
 ## ISSUE LINK:
-https://github.com/atsu0127/orch-link/issues/14
+https://github.com/atsu0127/orch-link/issues/17
