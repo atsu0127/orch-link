@@ -62,4 +62,5 @@ export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
 export type ConcertsListResponse = ApiResponse<ConcertAPI[]>;
 export type ConcertDetailResponse = ApiResponse<ConcertDetailAPI>;
 export type AttendanceFormsListResponse = ApiResponse<AttendanceFormAPI[]>;
+export type ScoresListResponse = ApiResponse<ScoreAPI[]>;
 export type ContactInfoResponse = ApiResponse<ContactInfoAPI>;

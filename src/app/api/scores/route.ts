@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTokenFromCookie, verifyToken } from "@/lib/auth";
+import { verifyToken } from "@/lib/auth";
 import { getScoresByConcert } from "@/lib/queries";
 import { prisma } from "@/lib/db";
 
@@ -166,7 +166,7 @@ export async function PUT(request: NextRequest) {
     if (title !== undefined) updateData.title = title;
     if (url !== undefined) updateData.url = url;
     
-    const updatedScore = await prisma.score.update({
+    await prisma.score.update({
       where: { id: scoreId },
       data: updateData,
     });
@@ -194,6 +194,63 @@ export async function PUT(request: NextRequest) {
 
   } catch (error) {
     console.error("Score update error:", error);
+    return NextResponse.json(
+      { error: "サーバーエラーが発生しました" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE /api/scores
+ * 楽譜削除API（管理者のみ）
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    // JWT認証チェック
+    const token = request.cookies.get("auth-token")?.value;
+    if (!token) {
+      return NextResponse.json(
+        { error: "認証が必要です" },
+        { status: 401 }
+      );
+    }
+
+    const payload = await verifyToken(token);
+    if (!payload || payload.role !== "admin") {
+      return NextResponse.json(
+        { error: "管理者権限が必要です" },
+        { status: 403 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const scoreId = searchParams.get('id');
+
+    if (!scoreId) {
+      return NextResponse.json(
+        { error: "楽譜IDが必要です" },
+        { status: 400 }
+      );
+    }
+
+    // データベースから楽譜を削除（カスケード削除でScoreCommentsも削除）
+    await prisma.score.delete({
+      where: { id: scoreId },
+    });
+    
+    console.log("楽譜削除完了:", {
+      scoreId,
+      deletedBy: payload.userId,
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "楽譜を削除しました",
+    });
+
+  } catch (error) {
+    console.error("Score delete error:", error);
     return NextResponse.json(
       { error: "サーバーエラーが発生しました" },
       { status: 500 }
