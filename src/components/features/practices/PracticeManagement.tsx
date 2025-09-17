@@ -194,7 +194,7 @@ export function PracticeManagement({
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setEditingPractice(null);
-    
+
     // 親コンポーネントにも通知（編集状態をクリア）
     if (onPracticeUpdate) {
       onPracticeUpdate();
