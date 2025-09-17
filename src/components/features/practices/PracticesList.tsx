@@ -10,27 +10,38 @@ import {
   Group,
   Badge,
   Divider,
+  ActionIcon,
 } from "@mantine/core";
 import {
   IconCalendar,
   IconMapPin,
   IconChevronRight,
   IconClock,
+  IconEdit,
+  IconTrash,
 } from "@tabler/icons-react";
 import { Practice } from "@/types";
 import { formatDate, formatTimeRange } from "@/lib/utils";
 import { PracticeDetail } from "./PracticeDetail";
+import { useAuth } from "@/components/features/auth/AuthProvider";
 
 interface PracticesListProps {
   concertId: string;
   practices: Practice[];
+  /** 編集コールバック（管理者のみ） */
+  onEdit?: (practice: Practice) => void;
+  /** 削除コールバック（管理者のみ） */
+  onDelete?: (practice: Practice) => void;
 }
 
 /**
  * 練習予定リストコンポーネント
  * 練習の一覧表示と詳細ビューへの切り替えを管理
  */
-export function PracticesList({ practices }: PracticesListProps) {
+export function PracticesList({ practices, onEdit, onDelete }: PracticesListProps) {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  
   const [selectedPractice, setSelectedPractice] = useState<Practice | null>(
     null
   );
@@ -90,6 +101,9 @@ export function PracticesList({ practices }: PracticesListProps) {
                 practice={practice}
                 onSelect={() => setSelectedPractice(practice)}
                 isPast={false}
+                isAdmin={isAdmin}
+                onEdit={onEdit}
+                onDelete={onDelete}
               />
             ))}
           </Stack>
@@ -112,6 +126,9 @@ export function PracticesList({ practices }: PracticesListProps) {
                 practice={practice}
                 onSelect={() => setSelectedPractice(practice)}
                 isPast={true}
+                isAdmin={isAdmin}
+                onEdit={onEdit}
+                onDelete={onDelete}
               />
             ))}
           </Stack>
@@ -128,9 +145,12 @@ interface PracticeCardProps {
   practice: Practice;
   onSelect: () => void;
   isPast: boolean;
+  isAdmin: boolean;
+  onEdit?: (practice: Practice) => void;
+  onDelete?: (practice: Practice) => void;
 }
 
-function PracticeCard({ practice, onSelect, isPast }: PracticeCardProps) {
+function PracticeCard({ practice, onSelect, isPast, isAdmin, onEdit, onDelete }: PracticeCardProps) {
   return (
     <Paper
       shadow="sm"
@@ -180,14 +200,45 @@ function PracticeCard({ practice, onSelect, isPast }: PracticeCardProps) {
           </Stack>
         </div>
 
-        {/* 詳細表示ボタン */}
-        <Button
-          variant="light"
-          size="xs"
-          rightSection={<IconChevronRight size="0.8rem" />}
-        >
-          詳細
-        </Button>
+        {/* ボタンエリア */}
+        <Stack gap="xs" align="flex-end">
+          {/* 管理者ボタン */}
+          {isAdmin && onEdit && onDelete && (
+            <Group gap="xs">
+              <ActionIcon
+                size="sm"
+                variant="light"
+                color="blue"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(practice);
+                }}
+              >
+                <IconEdit size="1rem" />
+              </ActionIcon>
+              <ActionIcon
+                size="sm"
+                variant="light"
+                color="red"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(practice);
+                }}
+              >
+                <IconTrash size="1rem" />
+              </ActionIcon>
+            </Group>
+          )}
+          
+          {/* 詳細表示ボタン */}
+          <Button
+            variant="light"
+            size="xs"
+            rightSection={<IconChevronRight size="0.8rem" />}
+          >
+            詳細
+          </Button>
+        </Stack>
       </Group>
     </Paper>
   );
