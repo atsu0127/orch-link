@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { LoadingOverlay, Alert } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { LoadingOverlay, Alert, Stack, Text } from "@mantine/core";
+import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
 import { AuthProvider, useAuth } from "@/components/features/auth/AuthProvider";
 import { Header } from "@/components/layout/Header";
 import { Navigation } from "@/components/layout/Navigation";
@@ -10,6 +12,7 @@ import { Footer } from "@/components/layout/Footer";
 import { AttendanceTab } from "@/components/features/attendance/AttendanceTab";
 import { ScoresTab } from "@/components/features/scores/ScoresTab";
 import { PracticesList } from "@/components/features/practices/PracticesList";
+import { PracticeManagement } from "@/components/features/practices/PracticeManagement";
 import { ContactTab } from "@/components/features/contact/ContactTab";
 import { ConcertManagement } from "@/components/features/concerts/ConcertManagement";
 import {
@@ -17,7 +20,7 @@ import {
   fetchConcertData,
   handleApiError,
 } from "@/lib/api-client";
-import { Concert, ConcertDetail, TabType } from "@/types";
+import { Concert, ConcertDetail, TabType, Practice } from "@/types";
 
 /**
  * メインアプリケーションページ
@@ -35,6 +38,30 @@ function MainApp() {
   const [concertData, setConcertData] = useState<ConcertDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // 練習予定管理用の状態
+  const [editingPractice, setEditingPractice] = useState<Practice | null>(null);
+
+  /**
+   * 演奏会データの読み込み
+   */
+  const loadConcertData = useCallback(async (concertId: string) => {
+    try {
+      const data = await fetchConcertData(concertId);
+      console.log(data);
+      if (!data) {
+        setError("演奏会データが見つかりません");
+        return;
+      }
+      setConcertData(data);
+      setError(null);
+    } catch (error) {
+      console.error("演奏会データ読み込みエラー:", error);
+      setError(
+        `演奏会データの読み込みに失敗しました: ${handleApiError(error)}`
+      );
+    }
+  }, []);
+
   // 初期化時の処理
   useEffect(() => {
     if (user) {
@@ -49,7 +76,7 @@ function MainApp() {
       // 選択された演奏会IDをローカルストレージに保存
       localStorage.setItem("lastSelectedConcert", selectedConcertId);
     }
-  }, [selectedConcertId]);
+  }, [selectedConcertId, loadConcertData]);
 
   // タブ変更時の処理
   useEffect(() => {
@@ -87,7 +114,9 @@ function MainApp() {
       const lastTab = localStorage.getItem("lastActiveTab") as TabType;
       if (
         lastTab &&
-        ["attendance", "scores", "practices", "contact", "concerts"].includes(lastTab)
+        ["attendance", "scores", "practices", "contact", "concerts"].includes(
+          lastTab
+        )
       ) {
         setActiveTab(lastTab);
       }
@@ -95,27 +124,6 @@ function MainApp() {
       console.error("アプリケーション初期化エラー:", error);
       setError(
         `アプリケーションの初期化に失敗しました: ${handleApiError(error)}`
-      );
-    }
-  };
-
-  /**
-   * 演奏会データの読み込み
-   */
-  const loadConcertData = async (concertId: string) => {
-    try {
-      const data = await fetchConcertData(concertId);
-      console.log(data);
-      if (!data) {
-        setError("演奏会データが見つかりません");
-        return;
-      }
-      setConcertData(data);
-      setError(null);
-    } catch (error) {
-      console.error("演奏会データ読み込みエラー:", error);
-      setError(
-        `演奏会データの読み込みに失敗しました: ${handleApiError(error)}`
       );
     }
   };
@@ -133,6 +141,83 @@ function MainApp() {
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
   };
+
+  /**
+   * 練習予定編集ハンドラ
+   */
+  const handlePracticeEdit = (practice: Practice) => {
+    setEditingPractice(practice);
+  };
+
+  /**
+   * 練習予定削除ハンドラ
+   */
+  const handlePracticeDelete = (practice: Practice) => {
+    modals.openConfirmModal({
+      title: "練習予定を削除",
+      children: (
+        <Stack gap="sm">
+          <Text size="sm">
+            「{practice.title}」を削除してもよろしいですか？
+          </Text>
+          <Alert color="yellow" variant="light">
+            <Text size="sm">
+              <strong>注意:</strong> この操作は元に戻せません。
+            </Text>
+          </Alert>
+        </Stack>
+      ),
+      labels: { confirm: "削除する", cancel: "キャンセル" },
+      confirmProps: { color: "red" },
+      onConfirm: () => performPracticeDelete(practice.id),
+    });
+  };
+
+  /**
+   * 練習予定削除実行
+   */
+  const performPracticeDelete = async (practiceId: string) => {
+    try {
+      const response = await fetch(`/api/practices?id=${practiceId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`練習予定の削除に失敗しました: ${response.status}`);
+      }
+
+      notifications.show({
+        title: "削除完了",
+        message: "練習予定を削除しました",
+        color: "green",
+        icon: <IconCheck size="1rem" />,
+      });
+
+      // 演奏会データを再読み込み
+      if (selectedConcertId) {
+        loadConcertData(selectedConcertId);
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      notifications.show({
+        title: "削除エラー",
+        message: handleApiError(error),
+        color: "red",
+        icon: <IconAlertCircle size="1rem" />,
+      });
+    }
+  };
+
+  /**
+   * 練習予定更新時のコールバック
+   */
+  const handlePracticeUpdate = useCallback(() => {
+    setEditingPractice(null);
+    if (selectedConcertId) {
+      loadConcertData(selectedConcertId);
+    }
+  }, [selectedConcertId, loadConcertData]);
 
   // ローディング中
   if (isLoading) {
@@ -179,9 +264,7 @@ function MainApp() {
       {/* メインコンテンツ */}
       <Navigation activeTab={activeTab} onTabChange={handleTabChange}>
         {/* 演奏会管理は常に利用可能（管理者のみ） */}
-        {activeTab === "concerts" && (
-          <ConcertManagement />
-        )}
+        {activeTab === "concerts" && <ConcertManagement />}
 
         {/* 他のタブは選択された演奏会のデータが必要 */}
         {selectedConcertId && concertData && (
@@ -201,10 +284,28 @@ function MainApp() {
             )}
 
             {activeTab === "practices" && (
-              <PracticesList
-                concertId={selectedConcertId}
-                practices={concertData.practices}
-              />
+              <Stack gap="lg">
+                {/* 練習予定一覧 */}
+                <PracticesList
+                  concertId={selectedConcertId}
+                  practices={concertData.practices}
+                  onEdit={
+                    user?.role === "admin" ? handlePracticeEdit : undefined
+                  }
+                  onDelete={
+                    user?.role === "admin" ? handlePracticeDelete : undefined
+                  }
+                />
+
+                {/* 練習予定管理（管理者のみ） */}
+                {user?.role === "admin" && (
+                  <PracticeManagement
+                    concertId={selectedConcertId}
+                    onPracticeUpdate={handlePracticeUpdate}
+                    initialEditingPractice={editingPractice}
+                  />
+                )}
+              </Stack>
             )}
 
             {activeTab === "contact" && (

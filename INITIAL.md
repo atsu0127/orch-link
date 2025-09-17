@@ -1,26 +1,31 @@
 ## FEATURE:
-Implement comprehensive score management functionality for administrators including score registration, editing, deletion, and update history management. The feature should provide a modal-based interface for managing sheet music links with full CRUD operations and update history tracking.
+Implement administrator-facing Practice Schedule CRUD functionality. The system currently has a complete Practice API and display components, but lacks the management UI for administrators to create, edit, and delete practice schedules directly within the application.
 
 ## EXAMPLES:
-- Existing ScoresTab component in src/components/features/scores/ScoresTab.tsx shows current read-only display
-- Score API endpoints in src/app/api/scores/route.ts demonstrate existing GET, POST, PUT operations
-- Prisma schema models (Score, ScoreComment) in prisma/schema.prisma show the database structure
-- Authentication pattern in existing API routes shows JWT-based admin verification
+Reference existing management components in the codebase:
+- `src/components/features/concerts/ConcertManagement.tsx` - Concert CRUD management interface pattern
+- `src/components/features/concerts/ConcertForm.tsx` - Form component pattern for data input
+- `src/components/features/scores/ScoreManagement.tsx` - Score management UI pattern with similar functionality
+
+The implementation should follow the same architectural patterns as these existing management components.
 
 ## DOCUMENTATION:
-- Mantine UI documentation for Modal, Form, and Table components: https://mantine.dev/
-- Next.js App Router API routes: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
-- Prisma ORM documentation: https://www.prisma.io/docs/
+- API endpoints already implemented: `/api/practices` (GET, POST, PUT, DELETE)
+- Practice data model: `src/types/index.ts` - Practice interface definition
+- Existing display components: `src/components/features/practices/PracticesList.tsx` and `PracticeDetail.tsx`
+- Authentication patterns: Admin role checking with `user?.role === "admin"`
+- Mantine UI components documentation: https://mantine.dev/
 
 ## OTHER CONSIDERATIONS:
-- Must implement missing DELETE API for scores and score comments
-- Modal should be mobile-responsive (primary use case)
-- Strict admin-only access control (JWT role verification)
-- Proper error handling and validation
-- Integration with existing ScoresTab component without breaking current functionality
-- Update history should show chronological changes with ability to edit/delete comments
-- URL validation for score links
-- Proper TypeScript types for all components and API responses
+- The Practice API is fully functional - no API modifications needed
+- Follow existing UI patterns from Concert and Score management components
+- Implement proper admin permission checks before showing management interfaces
+- Use Mantine components for consistency with existing design system
+- Handle timezone conversions properly for datetime fields
+- Practice schedules are associated with specific concerts (concertId relationship)
+- Include proper error handling and user feedback (notifications)
+- Add management buttons to existing PracticesList component when user is admin
+- Implement confirmation dialogs for destructive actions (deletion)
 
 ## ISSUE LINK:
-https://github.com/atsu0127/orch-link/issues/17
+https://github.com/atsu0127/orch-link/issues/19
