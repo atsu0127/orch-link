@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { LoadingOverlay, Alert, Stack, Text } from "@mantine/core";
 import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
@@ -55,7 +55,7 @@ function MainApp() {
       // 選択された演奏会IDをローカルストレージに保存
       localStorage.setItem("lastSelectedConcert", selectedConcertId);
     }
-  }, [selectedConcertId]);
+  }, [selectedConcertId, loadConcertData]);
 
   // タブ変更時の処理
   useEffect(() => {
@@ -108,7 +108,7 @@ function MainApp() {
   /**
    * 演奏会データの読み込み
    */
-  const loadConcertData = async (concertId: string) => {
+  const loadConcertData = useCallback(async (concertId: string) => {
     try {
       const data = await fetchConcertData(concertId);
       console.log(data);
@@ -124,7 +124,7 @@ function MainApp() {
         `演奏会データの読み込みに失敗しました: ${handleApiError(error)}`
       );
     }
-  };
+  }, []);
 
   /**
    * 演奏会変更ハンドラ
@@ -210,12 +210,12 @@ function MainApp() {
   /**
    * 練習予定更新時のコールバック
    */
-  const handlePracticeUpdate = () => {
+  const handlePracticeUpdate = useCallback(() => {
     setEditingPractice(null);
     if (selectedConcertId) {
       loadConcertData(selectedConcertId);
     }
-  };
+  }, [selectedConcertId, loadConcertData]);
 
   // ローディング中
   if (isLoading) {

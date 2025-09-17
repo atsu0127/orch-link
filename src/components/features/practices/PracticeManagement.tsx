@@ -51,17 +51,8 @@ export function PracticeManagement({
   const loadPractices = useCallback(async () => {
     try {
       setError(null);
-      // 特定のconcertIdの練習予定のみを取得
-      const response = await fetch(`/api/practices?concertId=${concertId}`, {
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error(`練習予定の読み込みに失敗しました: ${response.status}`);
-      }
-
-      // 練習予定一覧は親コンポーネントで管理されるため、ここでは何もしない
-      // 必要に応じて親コンポーネントに通知
+      // 練習予定一覧は親コンポーネントで管理されるため、API呼び出しは不要
+      // 親コンポーネントに更新を通知するのみ
       if (onPracticeUpdate) {
         onPracticeUpdate();
       }
@@ -71,14 +62,9 @@ export function PracticeManagement({
         `練習予定一覧の読み込みに失敗しました: ${handleApiError(error)}`
       );
     }
-  }, [concertId, onPracticeUpdate]);
+  }, [onPracticeUpdate]);
 
-  // 初期化時に練習予定一覧を取得
-  useEffect(() => {
-    if (isAdmin && concertId) {
-      loadPractices();
-    }
-  }, [isAdmin, concertId, loadPractices]);
+  // 初期化時の処理は不要（親コンポーネントで管理）
 
   // 外部から編集対象の練習予定が指定された場合の処理
   useEffect(() => {
