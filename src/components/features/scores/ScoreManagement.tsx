@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Paper,
   Title,
@@ -31,11 +31,13 @@ import { ScoreFormData, Score } from "@/types";
 import { ScoreForm } from "./ScoreForm";
 import { UpdateHistoryManager } from "./UpdateHistoryManager";
 import { useAuth } from "@/components/features/auth/AuthProvider";
-import { fetchScores, handleApiError } from "@/lib/api-client";
+import { handleApiError } from "@/lib/api-client";
 
 interface ScoreManagementProps {
   concertId: string;
   scores: Score[];
+  /** データ更新時のコールバック */
+  onDataUpdate?: () => void;
 }
 
 /**
@@ -54,21 +56,16 @@ interface ScoreApiResponse {
 export function ScoreManagement({
   concertId,
   scores,
+  onDataUpdate,
 }: ScoreManagementProps) {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
 
-  // 状態管理
-  const [localScores, setLocalScores] = useState<Score[]>(scores);
+  // 状態管理（UI状態のみ、データはpropsを直接使用）
   const [isLoading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingScore, setEditingScore] = useState<Score | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  // プロパティ変更時にローカル状態を同期（安全パターン：concertIdベース）
-  useEffect(() => {
-    setLocalScores(scores);
-  }, [concertId]);
 
   /**
    * フォームを閉じる
@@ -95,13 +92,13 @@ export function ScoreManagement({
   };
 
   /**
-   * 楽譜一覧を再読み込み
+   * 楽譜一覧を再読み込み（親コンポーネントに通知）
    */
   const loadScores = async () => {
     try {
       setError(null);
-      const updatedScores = await fetchScores(concertId);
-      setLocalScores(updatedScores);
+      // 親コンポーネントのデータ更新を呼び出し
+      onDataUpdate?.();
     } catch (error) {
       console.error("Scores loading error:", error);
       setError(
@@ -270,7 +267,7 @@ export function ScoreManagement({
   };
 
   // 楽譜がない場合の表示
-  if (localScores.length === 0) {
+  if (scores.length === 0) {
     return (
       <div className="text-center py-12">
         <IconMusic size={48} className="mx-auto text-gray-400 mb-4" />
@@ -328,7 +325,7 @@ export function ScoreManagement({
                 : "演奏会で使用する楽譜をダウンロードできます"}
             </Text>
           </div>
-          {isAdmin && localScores.length > 0 && (
+          {isAdmin && scores.length > 0 && (
             <Button
               leftSection={<IconPlus size="1rem" />}
               onClick={handleCreateNew}
@@ -349,7 +346,7 @@ export function ScoreManagement({
       )}
 
       {/* 楽譜一覧 */}
-      {localScores.map((score) => (
+      {scores.map((score) => (
         <Paper key={score.id} shadow="sm" p="lg" radius="md" className="border">
           <Stack gap="md">
             {/* 楽譜タイトルとリンク状態 */}

@@ -219,6 +219,24 @@ function MainApp() {
     }
   }, [selectedConcertId, loadConcertData]);
 
+  /**
+   * 出欠調整更新時のコールバック
+   */
+  const handleAttendanceUpdate = useCallback(() => {
+    if (selectedConcertId) {
+      loadConcertData(selectedConcertId);
+    }
+  }, [selectedConcertId, loadConcertData]);
+
+  /**
+   * 楽譜更新時のコールバック
+   */
+  const handleScoreUpdate = useCallback(() => {
+    if (selectedConcertId) {
+      loadConcertData(selectedConcertId);
+    }
+  }, [selectedConcertId, loadConcertData]);
+
   // ローディング中
   if (isLoading) {
     return (
@@ -273,6 +291,7 @@ function MainApp() {
               <AttendanceTab
                 concertId={selectedConcertId}
                 attendanceForms={concertData.attendanceForms}
+                onDataUpdate={handleAttendanceUpdate}
               />
             )}
 
@@ -280,6 +299,7 @@ function MainApp() {
               <ScoresTab
                 concertId={selectedConcertId}
                 scores={concertData.scores}
+                onDataUpdate={handleScoreUpdate}
               />
             )}
 

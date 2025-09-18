@@ -7,12 +7,14 @@ import { ScoreManagement } from "./ScoreManagement";
 interface ScoresTabProps {
   concertId: string;
   scores: Score[];
+  /** データ更新時のコールバック */
+  onDataUpdate?: () => void;
 }
 
 /**
  * 楽譜リンクタブコンポーネント
  * 楽譜管理機能を提供（管理者権限により表示が切り替わる）
  */
-export function ScoresTab({ concertId, scores }: ScoresTabProps) {
-  return <ScoreManagement concertId={concertId} scores={scores} />;
+export function ScoresTab({ concertId, scores, onDataUpdate }: ScoresTabProps) {
+  return <ScoreManagement concertId={concertId} scores={scores} onDataUpdate={onDataUpdate} />;
 }
