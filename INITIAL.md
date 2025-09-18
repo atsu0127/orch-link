@@ -1,37 +1,24 @@
 ## FEATURE:
-
-Implement administrator-facing Practice Schedule CRUD functionality. The system currently has a complete Practice API and display components, but lacks the management UI for administrators to create, edit, and delete practice schedules directly within the application.
+Fix real-time data reflection issue when switching concerts. Currently, when users select a different concert from the dropdown menu in the header, the practice schedules and sheet music data do not update to reflect the newly selected concert. The old concert's data remains displayed until the page is reloaded. The issue appears to be in the UI update timing rather than the data fetching process itself.
 
 ## EXAMPLES:
-
-Reference existing management components in the codebase:
-
-- `src/components/features/concerts/ConcertManagement.tsx` - Concert CRUD management interface pattern
-- `src/components/features/concerts/ConcertForm.tsx` - Form component pattern for data input
-- `src/components/features/scores/ScoreManagement.tsx` - Score management UI pattern with similar functionality
-
-The implementation should follow the same architectural patterns as these existing management components.
+- src/app/page.tsx:73-79 - Concert switching useEffect that should trigger loadConcertData
+- src/app/page.tsx:47-63 - loadConcertData function that fetches and sets concert data
+- src/components/layout/Header.tsx:58-66 - Concert selection dropdown component
+- src/lib/api-client.ts:65-88 - fetchConcertData API client function
 
 ## DOCUMENTATION:
-
-- API endpoints already implemented: `/api/practices` (GET, POST, PUT, DELETE)
-- Practice data model: `src/types/index.ts` - Practice interface definition
-- Existing display components: `src/components/features/practices/PracticesList.tsx` and `PracticeDetail.tsx`
-- Authentication patterns: Admin role checking with `user?.role === "admin"`
-- Mantine UI components documentation: https://mantine.dev/
+- React useEffect dependencies: https://react.dev/reference/react/useEffect
+- React state updates: https://react.dev/learn/state-a-components-memory
+- Next.js data fetching patterns: https://nextjs.org/docs/app/building-your-application/data-fetching
 
 ## OTHER CONSIDERATIONS:
-
-- The Practice API is fully functional - no API modifications needed
-- Follow existing UI patterns from Concert and Score management components
-- Implement proper admin permission checks before showing management interfaces
-- Use Mantine components for consistency with existing design system
-- Handle timezone conversions properly for datetime fields
-- Practice schedules are associated with specific concerts (concertId relationship)
-- Include proper error handling and user feedback (notifications)
-- Add management buttons to existing PracticesList component when user is admin
-- Implement confirmation dialogs for destructive actions (deletion)
+- The data fetching API calls appear to be working correctly based on code review
+- localStorage is being updated properly for concert selection persistence
+- The issue manifests specifically in the UI components (AttendanceTab, ScoresTab, PracticesList) not re-rendering with new data
+- Consider React component re-rendering patterns and dependency arrays in useEffect hooks
+- Check if child components are properly receiving updated props and re-rendering accordingly
+- Verify that concertData state is being properly updated and propagated to child components
 
 ## ISSUE LINK:
-
-https://github.com/atsu0127/orch-link/issues/19
+https://github.com/atsu0127/orch-link/issues/23

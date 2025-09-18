@@ -38,10 +38,14 @@ interface PracticesListProps {
  * 練習予定リストコンポーネント
  * 練習の一覧表示と詳細ビューへの切り替えを管理
  */
-export function PracticesList({ practices, onEdit, onDelete }: PracticesListProps) {
+export function PracticesList({
+  practices,
+  onEdit,
+  onDelete,
+}: PracticesListProps) {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  
+
   const [selectedPractice, setSelectedPractice] = useState<Practice | null>(
     null
   );
@@ -150,7 +154,14 @@ interface PracticeCardProps {
   onDelete?: (practice: Practice) => void;
 }
 
-function PracticeCard({ practice, onSelect, isPast, isAdmin, onEdit, onDelete }: PracticeCardProps) {
+function PracticeCard({
+  practice,
+  onSelect,
+  isPast,
+  isAdmin,
+  onEdit,
+  onDelete,
+}: PracticeCardProps) {
   return (
     <Paper
       shadow="sm"
@@ -229,7 +240,7 @@ function PracticeCard({ practice, onSelect, isPast, isAdmin, onEdit, onDelete }:
               </ActionIcon>
             </Group>
           )}
-          
+
           {/* 詳細表示ボタン */}
           <Button
             variant="light"

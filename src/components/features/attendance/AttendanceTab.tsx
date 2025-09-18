@@ -29,11 +29,13 @@ import { formatDate } from "@/lib/utils";
 import { AttendanceForm, AttendanceFormData } from "@/types";
 import { AttendanceForm as AttendanceFormComponent } from "./AttendanceForm";
 import { useAuth } from "@/components/features/auth/AuthProvider";
-import { fetchAttendanceForms, handleApiError } from "@/lib/api-client";
+import { handleApiError } from "@/lib/api-client";
 
 interface AttendanceTabProps {
   concertId: string;
   attendanceForms: AttendanceForm[];
+  /** データ更新時のコールバック */
+  onDataUpdate?: () => void;
 }
 
 /**
@@ -52,13 +54,12 @@ interface AttendanceApiResponse {
 export function AttendanceTab({
   concertId,
   attendanceForms,
+  onDataUpdate,
 }: AttendanceTabProps) {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
 
-  // 状態管理
-  const [localForms, setLocalForms] =
-    useState<AttendanceForm[]>(attendanceForms);
+  // 状態管理（UI状態のみ、データはpropsを直接使用）
   const [isLoading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingForm, setEditingForm] = useState<AttendanceForm | null>(null);
@@ -89,13 +90,13 @@ export function AttendanceTab({
   };
 
   /**
-   * 出欠調整一覧を再読み込み
+   * 出欠調整一覧を再読み込み（親コンポーネントに通知）
    */
   const loadAttendanceForms = async () => {
     try {
       setError(null);
-      const forms = await fetchAttendanceForms(concertId);
-      setLocalForms(forms);
+      // 親コンポーネントのデータ更新を呼び出し
+      onDataUpdate?.();
     } catch (error) {
       console.error("Attendance forms loading error:", error);
       setError(
@@ -264,7 +265,7 @@ export function AttendanceTab({
 
   // 演奏会に紐づく出欠調整がない場合
   // 演奏会に紐づく出欠調整がない場合
-  if (localForms.length === 0) {
+  if (attendanceForms.length === 0) {
     return (
       <div className="text-center py-12">
         <IconClipboardList size={48} className="mx-auto text-gray-400 mb-4" />
@@ -322,7 +323,7 @@ export function AttendanceTab({
                 : "演奏会への参加可否をお知らせください"}
             </Text>
           </div>
-          {isAdmin && localForms.length > 0 && (
+          {isAdmin && attendanceForms.length > 0 && (
             <Button
               leftSection={<IconPlus size="1rem" />}
               onClick={handleCreateNew}
@@ -343,7 +344,7 @@ export function AttendanceTab({
       )}
 
       {/* 出欠調整一覧 */}
-      {localForms.map((form) => (
+      {attendanceForms.map((form) => (
         <Paper key={form.id} shadow="sm" p="lg" radius="md" className="border">
           <Stack gap="md">
             {/* フォームタイトルとバッジ */}
