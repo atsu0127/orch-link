@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Paper,
   Title,
@@ -63,6 +63,11 @@ export function AttendanceTab({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingForm, setEditingForm] = useState<AttendanceForm | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // プロパティ変更時にローカル状態を同期（安全パターン：concertIdベース）
+  useEffect(() => {
+    setLocalForms(attendanceForms);
+  }, [concertId]);
 
   /**
    * フォームを閉じる

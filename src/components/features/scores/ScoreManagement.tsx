@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Paper,
   Title,
@@ -64,6 +64,11 @@ export function ScoreManagement({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingScore, setEditingScore] = useState<Score | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // プロパティ変更時にローカル状態を同期（安全パターン：concertIdベース）
+  useEffect(() => {
+    setLocalScores(scores);
+  }, [concertId]);
 
   /**
    * フォームを閉じる
