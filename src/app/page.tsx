@@ -271,6 +271,7 @@ function MainApp() {
           <>
             {activeTab === "attendance" && (
               <AttendanceTab
+                key={selectedConcertId}
                 concertId={selectedConcertId}
                 attendanceForms={concertData.attendanceForms}
               />
@@ -278,6 +279,7 @@ function MainApp() {
 
             {activeTab === "scores" && (
               <ScoresTab
+                key={selectedConcertId}
                 concertId={selectedConcertId}
                 scores={concertData.scores}
               />
